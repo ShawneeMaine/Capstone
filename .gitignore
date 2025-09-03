@@ -1,0 +1,12 @@
+#Altium Designer files to ignore
+History/
+Project Logs/
+*.LOG
+*.Dat
+*.drc
+*.lck
+*.outjob
+*.bak
+*.tmp
+*.zip
+*.rar
