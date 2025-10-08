@@ -1,1 +1,2 @@
-Record=TopLevelDocument|FileName=Sheet1.SchDoc|SheetNumber=1
+Record=TopLevelDocument|FileName=main.SchDoc|SheetNumber=1
+Record=SheetSymbol|SourceDocument=main.SchDoc|Designator=U_BuckConverter|SchDesignator=U_BuckConverter|FileName=BuckConverter.SchDoc|SheetNumber=2|SymbolType=Normal|RawFileName=BuckConverter.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
