@@ -1,0 +1,26 @@
+PARTS LIST
+
+ESL106M100AE3AA   FP-ESLE3-MFG    C1
+ESL106M100AE3AA   FP-ESLE3-MFG    C2
+1043P             FP-1043P-MFG    J2
+LB2518T150K       FP-LB2518-1_8-0_2-MFGL1
+MCR10EZPF1804     FP-MCR10-MFG    R1
+8K2 5% 0402(1005) RESC0402(1005)_MR2
+TFCR0603-10W-E-5763BT-1KFP-TFCR0603-IPC_AR3
+TPS62125DSGR      FP-DSG0008A-MFG U1
+EOS
+NET LIST
+
+NODENAME GND              $
+    C1         1  C2         1  J2         1  R3         1  U1         1
+NODENAME NetC1-2          $
+    C1         2  L1         2  R1         2  R2         2  U1         6
+NODENAME NetC2-2          $
+    C2         2  J2         2  U1         2  U1         3
+NODENAME NetL1-1          $
+    L1         1  U1         7
+NODENAME NetR1-1          $
+    R1         1  R3         2  U1         5
+NODENAME NetR2-1          $
+    R2         1  U1         8
+EOS
