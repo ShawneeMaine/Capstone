@@ -5,7 +5,6 @@ Project Logs/
 *.Dat
 *.drc
 *.lck
-*.outjob
 *.bak
 *.tmp
 *.zip
