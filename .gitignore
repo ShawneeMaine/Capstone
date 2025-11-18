@@ -3,7 +3,6 @@
 # =====================================================
 
 # --- Output jobs and generated outputs ---
-*.OutJob
 Project Outputs/*
 /Project Outputs/
 /OutputJobFiles/
