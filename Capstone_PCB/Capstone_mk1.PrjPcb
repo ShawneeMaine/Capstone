@@ -189,6 +189,10 @@ DocumentUniqueId=
 DocumentPath=Project Outputs for Capstone_mk1\BuckConverter.NET
 DItemRevisionGUID=
 
+[GeneratedDocument2]
+DocumentPath=Project Outputs for Capstone_mk1\Design Rule Check - PCB1.html
+DItemRevisionGUID=
+
 [Configuration1]
 Name=Sources
 ParameterCount=0
