@@ -58,3 +58,6 @@ Generated/*
 # --- Lock files ---
 *.lck
 *.lock
+
+# --- Custom ---
+*.Cam
