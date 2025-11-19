@@ -1,8 +1,8 @@
 //attiny headers
 #include <avr/io.h>
 #include <util/delay.h>
-
-#DEFINE DOT = 1000;
+//to account for 10ms delay, each value is its actual time in ms/10
+#DEFINE DOT = 100;
 #DEFINE DASH = 300;
 
 //defining buffer for storing the current message to be sent
@@ -33,17 +33,26 @@ int main
 			uint8_t send_b = PINA & (1<<PA1);
 			int dot_or_dash = -1;
 			
-			if(morse_b == 0)//if button is pressed
+			if(morse_b == 0)//if morse button is pressed
 			{
 				press_duration++;
+				if(release_duration >= 7 * DOT)//new word
+				{
+					//append space character
+				}
+				else if (DASH - 25 < release_duration < DASH + 25) //if delay is around 3s, that's the end of the letter. 250ms leniency
+				{
+					//check letter against morse library, convert to English character, append to message, reset current letter array
+					current_letter[] = [0,0,0,0];
+					release_duration = 0;
+				}
 			}
-			if(send_b == 1)
+			else //if morse button is not pressed
 			{
+				//if we are in this code block, then morse_b is unpressed, and we need to count the length of release
 				release_duration++;
-			}
-			else
-			{
-				//checking for press
+				
+				//checking for dot or dash
 				if(DOT - 25 < press_duration < DOT + 25)//check for dot, 250ms of leniency
 				{
 					dot_or_dash = 0;
@@ -56,24 +65,26 @@ int main
 				{
 					continue;
 				}
+				
 				//handling morse word
 				if (dot_or_dash == 0)
 				{
 					current_letter[i] = 0;
-					index++
+					index++;
+					dot_or_dash = -1;
 				}
 				else if (dot_or_dash == 1);
 				{
 					current_letter[i] = 1;
-					index++
+					index++;
+					dot_or_dash = -1;
 				}
-				//resetting values for next iteration
+				
+				//resetting necessary data
 				press_duration = 0;
-				message = NULL;
-				len = 0;
 				dot_or_dash = -1;
 			}
-			//due to this delay, the duration counter should be number of ms/10
+			//due to this delay, the duration counter should be equivalent to number of ms/10
 			_delay_ms(10);//debouncing delay
 			
 		}
