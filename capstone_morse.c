@@ -2,8 +2,8 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#DEFINE DOT = 500;
-#DEFINE DASH = 1500;
+#DEFINE DOT = 1000;
+#DEFINE DASH = 300;
 
 //defining buffer for storing the current message to be sent
 char *message = NULL;
@@ -23,19 +23,21 @@ int main
 		PORTA |= (1<<PA0)|(1<<PA1);
 		//counters for morse code
 		uint8_t press_duration = 0;
-		uint8_t release_duration = 0;
+		uint8_t release_dration = 0;
+		int current_letter[] = [0,0,0,0];
+		int index = 0;
 		while(1)
 		{
 			//read buttons
 			uint8_t morse_b = PINA & (1<<PA0);
 			uint8_t send_b = PINA & (1<<PA1);
-			int dot_or_dash = 0;
+			int dot_or_dash = -1;
 			
 			if(morse_b == 0)//if button is pressed
 			{
 				press_duration++;
 			}
-			else if(morse_b == 1)
+			if(send_b == 1)
 			{
 				release_duration++;
 			}
@@ -44,24 +46,32 @@ int main
 				//checking for press
 				if(DOT - 25 < press_duration < DOT + 25)//check for dot, 250ms of leniency
 				{
-					dot_or_dash = 1;
+					dot_or_dash = 0;
 				}
 				else if(DASH - 25 < press_duration < DASH + 25)//check for dash, 250ms of leniency
 				{
-					dot_or_dash = 2;
+					dot_or_dash = 1;
 				}
 				else
 				{
 					continue;
 				}
-				//checking for release
-				if(
+				//handling morse word
+				if (dot_or_dash == 0)
+				{
+					current_letter[i] = 0;
+					index++
+				}
+				else if (dot_or_dash == 1);
+				{
+					current_letter[i] = 1;
+					index++
+				}
 				//resetting values for next iteration
 				press_duration = 0;
-				release_dration = 0;
 				message = NULL;
 				len = 0;
-				dot_or_dash = 0;
+				dot_or_dash = -1;
 			}
 			//due to this delay, the duration counter should be number of ms/10
 			_delay_ms(10);//debouncing delay
