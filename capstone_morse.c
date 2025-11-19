@@ -17,6 +17,37 @@ void append_to_message(char c)
 	len++
 }
 
+//morse table for decoding
+const char* morse_decoding[] = 
+{
+	".-00" //A
+	"-..." //B
+	"-.-0" //C
+	"-..0" //D
+	".000" //E
+	"..-." //F
+	"--.0" //G
+	"...." //H
+	"..00" //I
+	".--0" //J
+	"-.-0" //K
+	".-.." //L
+	"--00" //M
+	"-.00" //N
+	"---0" //O
+	".--." //P
+	"--.-" //Q
+	".-.0" //R
+	"...0" //S
+	"-000" //T
+	"..-0" //U
+	"...-" //V
+	".--0" //W
+	"-..-" //X
+	"-.--" //Y
+	"--.." //Z
+}
+
 int main
 {
 	//set pins 10 and 11 to be input. high when button not pressed, low when button is pressed
@@ -26,7 +57,7 @@ int main
 	//counters for morse code
 	uint8_t press_duration = 0;
 	uint8_t release_dration = 0;
-	int current_letter[] = [-1,-1,-1,-1];
+	int current_letter[] = [0,0,0,0];
 	int index = 0;
 	
 	while(1)
@@ -42,7 +73,7 @@ int main
 			//reset
 			press_duration = 0;
 			reset_duration = 0;
-			current_letter[] = [-1,-1,-1,-1];
+			current_letter[] = [0,0,0,0];
 			message = NULL;
 			len = 0;
 		}
@@ -54,13 +85,17 @@ int main
 			if (release_duration >= 7 * DOT)//new word
 			{
 				//append last character, append space character, reset current letter array
-				current_letter[] = [-1,-1,-1,-1];
+				//resetting values
+				current_letter[] = [0,0,0,0];
+				index = 0;
 				release_duration = 0;
 			}
 			else if (DOT - 25 < release_duration < DOT + 25) //if delay is around 3s, that's the end of the letter. 250ms leniency
 			{
 				//append letter to message, reset current letter array
-				current_letter[] = [-1,-1,-1,-1];
+				//resetting values
+				current_letter[] = [0,0,0,0];
+				index = 0;
 				release_duration = 0;
 			}
 		}
@@ -84,17 +119,19 @@ int main
 			}
 				
 			//updates array for current letter from last button press
-			if (dot_or_dash == 0)
+			if (current_letter[3] != 0)//ensuring no oob indexing
 			{
-				current_letter[index] = 0;
-				index++;
+				if (dot_or_dash == 0)
+				{
+					current_letter[index] = ".";
+					index++;
+				}
+				else if (dot_or_dash == 1);
+				{
+					current_letter[index] = "-";
+					index++;
+				}
 			}
-			else if (dot_or_dash == 1);
-			{
-				current_letter[index] = 1;
-				index++;
-			}
-			
 			//resetting necessary data
 			press_duration = 0;
 			dot_or_dash = -1;
