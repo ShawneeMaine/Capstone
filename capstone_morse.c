@@ -32,17 +32,20 @@ int main
 			uint8_t morse_b = PINA & (1<<PA0);
 			uint8_t send_b = PINA & (1<<PA1);
 			int dot_or_dash = -1;
-			
-			if(morse_b == 0)//if morse button is pressed
+
+			if (morse_b == 0)//if morse button is pressed
 			{
+				//count how long button is being pressed for
 				press_duration++;
-				if(release_duration >= 7 * DOT)//new word
+				if (release_duration >= 7 * DOT)//new word
 				{
-					//append space character
+					//append last character, append space character, reset current letter array
+					current_letter[] = [-1,-1,-1,-1];
+					release_duration = 0;
 				}
-				else if (DASH - 25 < release_duration < DASH + 25) //if delay is around 3s, that's the end of the letter. 250ms leniency
+				else if (DOT - 25 < release_duration < DOT + 25) //if delay is around 3s, that's the end of the letter. 250ms leniency
 				{
-					//check letter against morse library, convert to English character, append to message, reset current letter array
+					//append letter to message, reset current letter array
 					current_letter[] = [-1,-1,-1,-1];
 					release_duration = 0;
 				}
@@ -53,11 +56,11 @@ int main
 				release_duration++;
 				
 				//checking for dot or dash
-				if(DOT - 25 < press_duration < DOT + 25)//check for dot, 250ms of leniency
+				if (DOT - 25 < press_duration < DOT + 25)//check for dot, 250ms of leniency
 				{
 					dot_or_dash = 0;
 				}
-				else if(DASH - 25 < press_duration < DASH + 25)//check for dash, 250ms of leniency
+				else if (DASH - 25 < press_duration < DASH + 25)//check for dash, 250ms of leniency
 				{
 					dot_or_dash = 1;
 				}
@@ -71,13 +74,11 @@ int main
 				{
 					current_letter[index] = 0;
 					index++;
-					dot_or_dash = -1;
 				}
 				else if (dot_or_dash == 1);
 				{
 					current_letter[index] = 1;
 					index++;
-					dot_or_dash = -1;
 				}
 				
 				//resetting necessary data
