@@ -18,13 +18,14 @@
 void append_to_string(char c, char** buffer, int *len)
 {
 	char* temp;
-	if ((temp = realloc(*buffer, *len+1)) == NULL)
+	if ((temp = realloc(*buffer, *len+2)) == NULL)
 	{
 		printf("memory allocation error, message is too long");
 		return;
 	}
 	*buffer = temp;
         *(*buffer + *len) = c;
+	*(*buffer + *len + 1) = '\0';
 	(*len)++;
 }
 
@@ -80,7 +81,7 @@ void reset_string(char **buffer, int *len)
 	if(*buffer)
 	{
 		free(*buffer);
-		*buffer = calloc(1, sizeof(char));
+		*buffer = NULL;
 	}
 	*len = 0;
 }
@@ -97,11 +98,10 @@ int main()
         uint16_t release_duration = 0; //time measured in centiseconds
 
 	//buffers for current letter and total message, and length counter for incrementing variable length message
-	char *message = calloc(1,sizeof(char));
-	char *current_letter = calloc(1,sizeof(char));
+	char *message = NULL;
+	char *current_letter = NULL;
 	int msg_index = 0;
 	int letter_index = 0;
-	int dot_or_dash = -1;
 
         while(1)
         {
@@ -131,15 +131,13 @@ int main()
                 {
 			//TESTING CODE
 			printf("enter duration of button being unpressed\n");
-			scanf("%d", &release_duration);
-
+			scanf("%hu", &release_duration);
                         //count how long button is being pressed for
                         press_duration++;
 
                         if (release_duration >= 7 * DOT)//new word
                         {
                                 //append last character, append space character
-				printf("new word\n");
 				append_to_string(decode_letter(current_letter), &message, &msg_index);
 				append_to_string('_', &message, &msg_index);
 				reset_string(&current_letter, &letter_index);
@@ -147,12 +145,10 @@ int main()
                         else if (((3 * DOT) - LENIENCE < release_duration) && (release_duration < (3 * DOT) + LENIENCE)) //if delay is around 3s, that's the end of the letter. 250ms leniency
                         {
                                 //append letter to message
-				printf("new letter\n");
-				printf("%s %d\n", message, msg_index);
 				append_to_string(decode_letter(current_letter), &message, &msg_index);
-				printf("%s %d\n", message, msg_index);
 				reset_string(&current_letter, &letter_index);
                         }
+			else continue;
 			//updating values
 			release_duration = 0;
                 }
@@ -160,41 +156,27 @@ int main()
                 {
 			//TESTING CODE
 			printf("enter duration of button being pressed\n");
-			scanf("%d", &press_duration);
+			scanf("%hu", &press_duration);
 
                         //if we are in this code block, then morse_b is unpressed, and we need to count the length of release
                         release_duration++;
-			printf("%s %d\n", current_letter, letter_index);
+
                         //checking for dot or dash
                         if ((DOT - LENIENCE < press_duration) && (press_duration < DOT + LENIENCE))//check for dot, 250ms of leniency
                         {
-                                dot_or_dash = 0;
+                                append_to_string('.', &current_letter, &letter_index);
                         }
                         else if ((DASH - LENIENCE < press_duration) && (press_duration < DASH + LENIENCE))//check for dash, 250ms of leniency
                         {
-                                dot_or_dash = 1;
+                                append_to_string('-', &current_letter, &letter_index);
                         }
-                        else
-                        {
-                                continue;
-                        }
-
-                        //updates array for current letter from last button press
-                        if (*(current_letter + LETTER_LENGTH - 1) == 0)//ensuring no oob indexing
-                        {
-                                if (dot_or_dash == 0)
-                                {
-                                        append_to_string('.', &current_letter, &letter_index);
-                                }
-                                else if (dot_or_dash == 1)
-                                {
-                                        append_to_string('-', &current_letter, &letter_index);
-                                }
-                        }
-			printf("%s %d\n", current_letter, letter_index);
-			printf("msg idx %d\n", msg_index);
+                        else continue;
+			if (letter_index == 4) //ensuring letter array never goes above 4 dots/dashes
+			{
+				append_to_string('\0', &current_letter, &letter_index);
+				letter_index = 3;
+			}
                         //resetting necessary data
-			dot_or_dash = -1;
                         press_duration = 0;
                 }
                 //due to this delay, the duration counter should be equivalent to number of ms/10
