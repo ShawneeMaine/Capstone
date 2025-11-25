@@ -68,7 +68,6 @@ char decode_letter(char* letter)
 	{
 		if (strlen(letter) != strlen(morse_table[i]))
 		{
-			printf("ya\n");
 			continue;
 		}
 		if (strncmp(letter, morse_table[i], strlen(morse_table[i])) == 0)
