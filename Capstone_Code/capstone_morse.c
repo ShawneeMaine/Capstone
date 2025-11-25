@@ -54,11 +54,17 @@ const char* morse_table[] =
 
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-void decode_letter(int letter)
+char decode_letter(char* letter)
 {
 	for (int i = 0; i < 26; i++)
 	{
+		if (strncmp(letter, morse_table[i], 4) == 0)
+		{
+			return alphabet[i];
+		}
 	}
+	printf("Decoding failed on input %c.\n", *letter);
+	return -1;
 }
 
 int main()
