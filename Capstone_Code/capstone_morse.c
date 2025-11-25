@@ -14,7 +14,7 @@ char *current_letter = NULL;
 size_t len = 0;
 
 //function to append letter to buffer
-void append_to_char(char c, char* message)
+void append_to_char(char c, char** message)
 {
         message = realloc(message, len+1);
         message[len] = c;
@@ -24,29 +24,29 @@ void append_to_char(char c, char* message)
 //morse table for decoding
 const char* morse_table[] =
 {
-        ".-00", //A
+        ".-", //A
         "-...", //B
-        "-.-0", //C
-        "-..0", //D
-        ".000", //E
+        "-.-", //C
+        "-..", //D
+        ".", //E
         "..-.", //F
-        "--.0", //G
+        "--.", //G
         "....", //H
-        "..00", //I
-        ".--0", //J
-        "-.-0", //K
+        "..", //I
+        ".--", //J
+        "-.-", //K
         ".-..", //L
-        "--00", //M
-        "-.00", //N
-        "---0", //O
+        "--", //M
+        "-.", //N
+        "---", //O
         ".--.", //P
         "--.-", //Q
-        ".-.0", //R
-        "...0", //S
-        "-000", //T
-        "..-0", //U
+        ".-.", //R
+        "...", //S
+        "-", //T
+        "..-", //U
         "...-", //V
-        ".--0", //W
+        ".--", //W
         "-..-", //X
         "-.--", //Y
         "--..", //Z
@@ -54,11 +54,11 @@ const char* morse_table[] =
 
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-char decode_letter(char* letter)
+char decode_letter(char** letter)
 {
 	for (int i = 0; i < 26; i++)
 	{
-		if (strncmp(letter, morse_table[i], 4) == 0)
+		if (strncmp(letter, morse_table[i], len(letter)) == 0)
 		{
 			return alphabet[i];
 		}
@@ -87,6 +87,7 @@ int main()
                 if (send_b == 0) //checking for if send button is pressed
                 {
                         //send message to other device
+
                         //reset
                         press_duration = 0;
                         release_duration = 0;
@@ -102,7 +103,9 @@ int main()
                         if (release_duration >= 7 * DOT)//new word
                         {
                                 //append last character, append space character, reset current letter array
+				append_to_char(decode_letter(&current_letter), &message);
                                 //resetting values
+				free(current_letter);
                                 current_letter = NULL;
                                 release_duration = 0;
                         }
@@ -116,7 +119,7 @@ int main()
                 }
                 else //if morse button is not pressed
                 {
-                        //if we are in this code block, then morse_b is unpressed, and we need to count the length of release
+                        //if we are in this codde block, then morse_b is unpressed, and we need to count the length of release
                         release_duration++;
 
                         //checking for dot or dash
@@ -138,11 +141,11 @@ int main()
                         {
                                 if (dot_or_dash == 0)
                                 {
-                                        append_to_char('.', current_letter);
+                                        append_to_char('.', &current_letter);
                                 }
                                 else if (dot_or_dash == 1);
                                 {
-                                        append_to_char('-', current_letter);
+                                        append_to_char('-', &current_letter);
                                 }
                         }
                         //resetting necessary data
