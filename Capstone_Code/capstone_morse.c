@@ -16,8 +16,8 @@ size_t len = 0;
 //function to append letter to buffer
 void append_to_char(char c, char** message)
 {
-        message = realloc(message, len+1);
-        message[len] = c;
+        *message = realloc(*message, len+1);
+        (*message)[len] = c;
         len++;
 }
 
@@ -58,12 +58,12 @@ char decode_letter(char** letter)
 {
 	for (int i = 0; i < 26; i++)
 	{
-		if (strncmp(letter, morse_table[i], len(letter)) == 0)
+		if (strncmp(*letter, morse_table[i], strlen(morse_table[i])) == 0)
 		{
 			return alphabet[i];
 		}
 	}
-	printf("Decoding failed on input %c.\n", *letter);
+	printf("Decoding failed on input %c.\n", **letter);
 	return -1;
 }
 
@@ -102,8 +102,9 @@ int main()
 
                         if (release_duration >= 7 * DOT)//new word
                         {
-                                //append last character, append space character, reset current letter array
+                                //append last character, append space character
 				append_to_char(decode_letter(&current_letter), &message);
+				append_to_char('_', &message);
                                 //resetting values
 				free(current_letter);
                                 current_letter = NULL;
@@ -111,8 +112,10 @@ int main()
                         }
                         else if ((DOT - 25 < release_duration) && (release_duration < DOT + 25)) //if delay is around 3s, that's the end of the letter. 250ms leniency
                         {
-                                //append letter to message, reset current letter array
+                                //append letter to message
+				append_to_char(decode_letter(&current_letter), &message);
                                 //resetting values
+				free(current_letter);
                                 current_letter = NULL;
                                 release_duration = 0;
                         }
