@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 //attiny headers
 #include <avr/io.h>
 #include <util/delay.h>
@@ -93,7 +95,7 @@ int main()
                                 index = 0;
                                 release_duration = 0;
                         }
-                        else if (DOT - 25 < release_duration < DOT + 25) //if delay is around 3s, that's the end of the letter. 250ms leniency
+                        else if ((DOT - 25 < release_duration) && (release_duration < DOT + 25)) //if delay is around 3s, that's the end of the letter. 250ms leniency
                         {
                                 //append letter to message, reset current letter array
                                 //resetting values
@@ -108,11 +110,11 @@ int main()
                         release_duration++;
 
                         //checking for dot or dash
-                        if (DOT - 25 < press_duration < DOT + 25)//check for dot, 250ms of leniency
+                        if ((DOT - 25 < press_duration) && (press_duration < DOT + 25))//check for dot, 250ms of leniency
                         {
                                 dot_or_dash = 0;
                         }
-                        else if (DASH - 25 < press_duration < DASH + 25)//check for dash, 250ms of leniency
+                        else if ((DASH - 25 < press_duration) && (press_duration < DASH + 25))//check for dash, 250ms of leniency
                         {
                                 dot_or_dash = 1;
                         }
@@ -143,3 +145,4 @@ int main()
                 _delay_ms(10);//debouncing delay
 
         }
+}
