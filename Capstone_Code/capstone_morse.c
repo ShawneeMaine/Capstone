@@ -91,6 +91,8 @@ int main()
                         //reset
                         press_duration = 0;
                         release_duration = 0;
+			free(current_letter);
+			free(message);
                         current_letter = NULL;
                         message = NULL;
                         len = 0;
