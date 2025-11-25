@@ -1,4 +1,4 @@
-#include <stdlib.h>
+ #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 //attiny headers
@@ -10,10 +10,11 @@
 
 //defining buffer for storing the current message to be sent
 char *message = NULL;
+char *current_letter = NULL;
 size_t len = 0;
 
 //function to append letter to buffer
-void append_to_message(char c)
+void append_to_char(char c, char* message)
 {
         message = realloc(message, len+1);
         message[len] = c;
@@ -21,7 +22,7 @@ void append_to_message(char c)
 }
 
 //morse table for decoding
-const char* morse_decoding[] =
+const char* morse_table[] =
 {
         ".-00", //A
         "-...", //B
@@ -51,7 +52,14 @@ const char* morse_decoding[] =
         "--..", //Z
 };
 
-const char* alphabet[] = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
+const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+void decode_letter(int letter)
+{
+	for (int i = 0; i < 26; i++)
+	{
+	}
+}
 
 int main()
 {
@@ -62,8 +70,6 @@ int main()
         //counters for morse code
         uint8_t press_duration = 0;
         uint8_t release_duration = 0;
-        int current_letter[5];
-        int index = 0;
 
         while(1)
         {
@@ -78,7 +84,7 @@ int main()
                         //reset
                         press_duration = 0;
                         release_duration = 0;
-                        for(int i = 0; i < 4; i++) current_letter[i] = 0;
+                        current_letter = NULL;
                         message = NULL;
                         len = 0;
                 }
@@ -91,16 +97,14 @@ int main()
                         {
                                 //append last character, append space character, reset current letter array
                                 //resetting values
-                                for(int i = 0; i < 4; i++) current_letter[i] = 0;
-                                index = 0;
+                                current_letter = NULL;
                                 release_duration = 0;
                         }
                         else if ((DOT - 25 < release_duration) && (release_duration < DOT + 25)) //if delay is around 3s, that's the end of the letter. 250ms leniency
                         {
                                 //append letter to message, reset current letter array
                                 //resetting values
-                                for(int i = 0; i < 4; i++) current_letter[i] = 0;
-                                index = 0;
+                                current_letter = NULL;
                                 release_duration = 0;
                         }
                 }
@@ -128,13 +132,11 @@ int main()
                         {
                                 if (dot_or_dash == 0)
                                 {
-                                        current_letter[index] = ".";
-                                        index++;
+                                        append_to_char('.', current_letter);
                                 }
                                 else if (dot_or_dash == 1);
                                 {
-                                        current_letter[index] = "-";
-                                        index++;
+                                        append_to_char('-', current_letter);
                                 }
                         }
                         //resetting necessary data
