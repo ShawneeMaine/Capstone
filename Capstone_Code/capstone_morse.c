@@ -66,14 +66,18 @@ char decode_letter(char* letter)
 {
 	for (int i = 0; i < 26; i++)
 	{
-		if (strlen(letter) != strlen(morse_table[i])) continue;
+		if (strlen(letter) != strlen(morse_table[i]))
+		{
+			printf("ya\n");
+			continue;
+		}
 		if (strncmp(letter, morse_table[i], strlen(morse_table[i])) == 0)
 		{
 			return alphabet[i];
 		}
 	}
 	printf("Decoding failed on input %c.\n", *letter);
-	return -1;
+	return;
 }
 
 void reset_string(char **buffer, int *len)
@@ -134,23 +138,26 @@ int main()
 			scanf("%hu", &release_duration);
                         //count how long button is being pressed for
                         press_duration++;
-
-                        if (release_duration >= 7 * DOT)//new word
+			printf("test %s\n", current_letter);
+                        if ((release_duration >= 7 * DOT) && current_letter)//new word
                         {
                                 //append last character, append space character
 				append_to_string(decode_letter(current_letter), &message, &msg_index);
 				append_to_string('_', &message, &msg_index);
 				reset_string(&current_letter, &letter_index);
+	                        release_duration = 0;
                         }
-                        else if (((3 * DOT) - LENIENCE < release_duration) && (release_duration < (3 * DOT) + LENIENCE)) //if delay is around 3s, that's the end of the letter. 250ms leniency
+                        else if (current_letter && ((3 * DOT) - LENIENCE < release_duration) && (release_duration < (3 * DOT) + LENIENCE)) //if delay is around 3s, that's the end of the letter. 250ms leniency
                         {
                                 //append letter to message
 				append_to_string(decode_letter(current_letter), &message, &msg_index);
 				reset_string(&current_letter, &letter_index);
+	                        release_duration = 0;
                         }
-			else continue;
-			//updating values
-			release_duration = 0;
+			else
+			{
+	                        release_duration = 0;
+			}
                 }
                 else //if morse button is not pressed
                 {
