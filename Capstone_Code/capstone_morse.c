@@ -18,30 +18,30 @@
 //morse table for decoding
 const char* morse_table[] =
 {
-        "    ", //" " (space)
-        ".-  ", //A
+        " ", //" " (space)
+        ".-", //A
         "-...", //B
-        "-.- ", //C
-        "-.. ", //D
-        ".   ", //E
+        "-.-", //C
+        "-..", //D
+        ".", //E
         "..-.", //F
-        "--. ", //G
+        "--.", //G
         "....", //H
-        "..  ", //I
-        ".-- ", //J
-        "-.- ", //K
+        "..", //I
+        ".--", //J
+        "-.-", //K
         ".-..", //L
-        "--  ", //M
-        "-.  ", //N
-        "--- ", //O
+        "--", //M
+        "-.", //N
+        "---", //O
         ".--.", //P
         "--.-", //Q
-        ".-. ", //R
-        "... ", //S
-        "-   ", //T
-        "..- ", //U
+        ".-.", //R
+        "...", //S
+        "-", //T
+        "..-", //U
         "...-", //V
-        ".-- ", //W
+        ".--", //W
         "-..-", //X
         "-.--", //Y
         "--..", //Z
@@ -56,12 +56,13 @@ char current_letter[MAX_LETTER_LENGTH + 1];
 void interpret_buttons() {
         if(button_pressed == 2) {
 
-                if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter)==MAX_LETTER_LENGTH)) {
+                if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter) == MAX_LETTER_LENGTH)) {
                         update_string(message,MAX_MESSAGE_LENGTH,decode());
                         if(b2_press_time>WORD_SEPERATION) {
-                                strcpy(current_letter, "    ");
+                                strcpy(current_letter, " ");
                                 update_string(message,MAX_MESSAGE_LENGTH,decode());
                         }
+                        memset(current_letter,0,sizeof(current_letter));
                         
                 }
         }
@@ -74,6 +75,7 @@ void interpret_buttons() {
         else if(button_pressed == 1) {
 //              send_data();
                 memset(message, 0, sizeof(message));
+                memset(current_letter,0,sizeof(current_letter));
         }
         update_display();
 }
@@ -94,11 +96,13 @@ char decode()
         uint8_t i;
 	for (i = 0; i < 27; i++)
 	{
+                if(strlen(current_letter) != strlen(morse_table[i]))
+                        continue;
                 if(!strncmp(*(morse_table+i), current_letter, MAX_LETTER_LENGTH)) {
                         printf("Match found: %c",*(alphabet+i));
                         return *(alphabet+i);
                 }
 	}
-        printf("Decode Fail: No match found.\n");
+        printf("Decode Fail: No match found for S%sE\n",current_letter);
         return -1;
 }
