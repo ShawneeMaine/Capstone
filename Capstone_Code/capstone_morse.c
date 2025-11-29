@@ -14,6 +14,9 @@
 #define LETTER_LENGTH 4
 #define DELAY 10
 
+void interpret_buttons() {
+        
+}
 //function to append letter to buffer
 void append_to_string(char c, char** buffer, int *len)
 {

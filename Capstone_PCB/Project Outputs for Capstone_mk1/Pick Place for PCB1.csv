@@ -1,0 +1,29 @@
+Altium Designer Pick and Place Locations
+C:\Users\benja\Documents\Classes\Capstone\Capstone\Capstone_PCB\Project Outputs for Capstone_mk1\Pick Place for PCB1.csv
+
+========================================================================================================================
+File Design Information:
+
+Date:       18/11/25
+Time:       23:41
+Revision:   98deb35d86ec45b9cff238100b5173f9530a3060
+Variant:    No variations
+Units used: mil
+
+"Designator","Comment","Layer","Footprint","Center-X(mil)","Center-Y(mil)","Rotation","Description"
+"J1","TLW-106-05-T-S","TopLayer","SAMTEC_TLW-106-05-T-S","6250.000","3725.000","90",""
+"U2","ATtiny84-20SSU","TopLayer","14S1_N","5750.000","3680.000","0","8-bit AVR Microcontroller, 20MHz, 2.7-5.5V, 8KB Flash, 512 Bytes EEPROM, 512 Bytes SRAM, 14-pin SOIC, Industrial Grade (-40°C to 85°C), Pb-Free"
+"BUCK_IC","TPS62125DSGR","TopLayer","FP-DSG0008A-MFG","6277.500","2921.772","90","IC REG BUCK ADJ 300MA 8WSON"
+"SW2","EVP-AYG0BA","TopLayer","FP-EVP-AYG0BA-MFG","6655.000","3550.000","0","SWITCH TACTILE SPST-NO 0.02A 15V"
+"SW1","EVP-AYG0BA","TopLayer","FP-EVP-AYG0BA-MFG","6645.000","3800.000","0","SWITCH TACTILE SPST-NO 0.02A 15V"
+"R2","TFCR0603-10W-E-5763BT-1K","TopLayer","FP-TFCR0603-IPC_A","6430.000","2645.000","180","RES Thin Film,  576kO, 0.1%, 0.1W, 25ppm/°C, 0603"
+"R_PULLUP","8K2 5% 0402(1005)","TopLayer","RESC0402(1005)_M","6107.500","3136.772","90","8K2 0.063W 5% 0402 (1005 Metric)  SMD"
+"R1","MCR10EZPF1804","TopLayer","FP-MCR10-MFG","6465.000","2740.000","0","Thick Film Chip Resistor, 0805, 1.8MO, 1%, 100ppm/°C, 0.125W, 150V"
+"P1","62100421921","TopLayer","62100421921","5200.000","3835.000","180",""
+"L1","LPS3314-222MRB","TopLayer","IND_LPS3314-222MRB","6278.986","3125.422","0","Inductor, Shld, 2.2uh, 20%, 1.2a, Smd"
+"BATTERY","1043P","TopLayer","FP-1043P-MFG","4500.000","2695.000","0","BATT HOLDER 18650 1 CELL PC PIN"
+"C5","GRM155C71H104KE19D","TopLayer","FP-GRM155-0_05-MFG","3990.000","3440.000","0","Chip Multilayer Ceramic Capacitors for General Purpose, 0402, 0.10uF, X7S, 22%, 10%, 50V"
+"C4","GRM155C71H104KE19D","TopLayer","FP-GRM155-0_05-MFG","6385.000","3690.000","270","Chip Multilayer Ceramic Capacitors for General Purpose, 0402, 0.10uF, X7S, 22%, 10%, 50V"
+"C3","GRM155C71H104KE19D","TopLayer","FP-GRM155-0_05-MFG","5570.000","3915.000","90","Chip Multilayer Ceramic Capacitors for General Purpose, 0402, 0.10uF, X7S, 22%, 10%, 50V"
+"C_IN","GRM21BR61E106MA73K","TopLayer","FP-GRM21B-0_15-IPC_C","6142.500","2891.772","90","Chip Multilayer Ceramic Capacitors for General Purpose, 0805, 10uF, X5R, 15%, 20%, 25V"
+"C1","GRM21BR61E106MA73K","TopLayer","FP-GRM21B-0_15-IPC_C","6472.500","2951.772","270","Chip Multilayer Ceramic Capacitors for General Purpose, 0805, 10uF, X5R, 15%, 20%, 25V"
