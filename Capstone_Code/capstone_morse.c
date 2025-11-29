@@ -1,8 +1,8 @@
+#include "capstone_morse.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 //testing libraries
-#include <stdint.h>
 #include <unistd.h>
 //attiny headers
 //#include <avr/io.h>

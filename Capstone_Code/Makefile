@@ -1,32 +1,33 @@
-CC = avr-gcc
-MCU = attiny84
-F_CPU = 8000000UL
-CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -Wall -Os
+#config
+CC      = avr-gcc
+MCU     = attiny84
+F_CPU = 1000000UL
+
+CFLAGS  = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -Wall -Os
 OBJCOPY = avr-objcopy
+AVRSIZE = avr-size
 
-#morse
-TARG1 = capstone_morse
-TARG1_SRC = capstone_morse.c
-TARG1_OBJ = $(TARG1_SRC:.c=.o)
+TARGET  = capstone
 
-#display
-TARG2 = capstone_display
-TARG2_SRC = capstone_display.c
-TARG2_OBJ = $(TARG2_SRC:.c=.o)
+SRC = \
+    capstone_main.c \
+    capstone_display.c \
+    capstone_morse.c \
+    capstone_input.c
 
-all: $(TARG1).hex $(TARG2).hex
+OBJ = $(SRC:.c=.o)
+
+#build rules
+all: $(TARGET).hex
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARG1).elf: $(TARG1_OBJ)
+$(TARGET).elf: $(OBJ)
 	$(CC) $(CFLAGS) $^ -o $@
-$(TARG2).elf: $(TARG2_OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(AVRSIZE) --mcu=$(MCU) --format=avr $@
 
-$(TARG1).hex: $(TARG1).elf
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
-$(TARG2).hex: $(TARG2).elf
+$(TARGET).hex: $(TARGET).elf
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
 clean:

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int main()
+void update_display()
 {
 	printf("test\n");
 }
