@@ -7,15 +7,7 @@ Button 1 is connected to pin PA2 on the ATTINY. This is the SEND MESSAGE button 
 Button 2 is connected to pin PA3 on the ATTINY. This is the MORSE CODE INPUT button for this project.
 */
 
-//The libraries used to program the ATTINY84
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-#define BUTTON1_PIN PA2
-#define BUTTON2_PIN PA3
-
-//The debounce time in milliseconds
-#define DEBOUNCE_MS 20
+#include "capstone_input.h"
 
 volatile uint32_t millis = 0;
 
@@ -33,7 +25,7 @@ volatile uint32_t last_change_b2 = 0;
 //For measuring duration of Button 2
 uint32_t b2_prev_timestamp = 0;
 uint32_t b2_current_timestamp = 0;
-uint32_t b2_press_time = 0;
+uint32_t b2_press_time = 0;//in ms
 
 
 //Tracker of what button is currently pressed(0=None)
