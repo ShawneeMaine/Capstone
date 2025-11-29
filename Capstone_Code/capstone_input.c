@@ -71,6 +71,25 @@ uint32_t millis_now() {
 }
 
 
+//Also for last_change_b1 and b2
+uint32_t get_b1_timestamp() {
+    uint32_t b1;
+    cli();  //Disable interrupts
+    b1 = last_change_b1;
+    sei();  //Turn interrupts back on
+    return b1;
+}
+
+
+uint32_t get_b2_timestamp() {
+    uint32_t b2;
+    cli();  //Disable interrupts
+    b2 = last_change_b2;
+    sei();  //Turn interrupts back on
+    return b2;
+}
+
+
 //Initialize Timer0 for 1ms intervals
 void timer0_init() {
     TCCR0A |= (1 << WGM01); //Clear Timer on Compare (CTC) mode
@@ -103,25 +122,25 @@ void master_button_init() {
 //Button reading and software debounce
 void read_buttons() {
     uint32_t now = millis_now();
+    uint32_t b1_current_timestamp = get_b1_timestamp();
+    uint32_t b2_current_timestamp = get_b2_timestamp();
+
+
     if(deb_flag) {//Button press detected
-        if(last_change_b1 > last_change_b2) {   //Debound button 1
-            if ((now - last_change_b1) >= DEBOUNCE_MS) {
+        if(b1_current_timestamp > b2_current_timestamp) {   //Debound button 1
+            if ((now - b1_current_timestamp) >= DEBOUNCE_MS) {
                 deb_flag = 0;
-                button_pressed = 1;
+                button_pressed = (button_pressed == 0) ? 1 : 0;
             }
-            else
-                button_pressed = 0;
         }
         else {  //Debound button 2
-            if ((now - last_change_b2) >= DEBOUNCE_MS) {
+            if ((now - b2_current_timestamp) >= DEBOUNCE_MS) {
                 deb_flag = 0;
-                b2_press_time = last_change_b2-b2_prev_timestamp;
-                b2_prev_timestamp = last_change_b2;
-                button_pressed = 2;
+                b2_press_time = b2_current_timestamp-b2_prev_timestamp;
+                button_pressed = (button_pressed == 0) ? 2 : 0;
             }
-            else
-                button_pressed = 0;
-
         }
     }
+
+
 }

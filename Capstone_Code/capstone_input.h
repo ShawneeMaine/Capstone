@@ -14,6 +14,8 @@
 #define DEBOUNCE_MS 20
 
 uint32_t millis_now();
+uint32_t get_b1_timestamp();
+uint32_t get_b2_timestamp();
 void timer0_init();
 void io_init();
 void master_button_init();
