@@ -1,4 +1,10 @@
 #include "capstone_morse.h"
+
+//#include "capstone_input.h"
+//For testing purposes only the real header is replaced with the simulation header
+#include "input_simulation.h"
+
+#include "capstone_display.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -8,16 +14,6 @@
 //#include <avr/io.h>
 //#include <util/delay.h>
 
-
-//All times in ms
-#define DOT 1000
-#define DASH 3000
-#define LETTER_SEPERATION 3000
-#define WORD_SEPERATION 7000
-#define TOL 500
-
-#define MAX_LETTER_LENGTH 4
-#define MAX_MESSAGE_LENGTH 20
 
 //morse table for decoding
 const char* morse_table[] =
@@ -54,18 +50,19 @@ const char* morse_table[] =
 //Includes a space at the start
 const char alphabet[] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-char *message = calloc(MAX_MESSAGE_LENGTH+1,sizeof(char));
-char *current_letter = calloc(MAX_LETTER_LENGTH+1,sizeof(char));
-
+char message[MAX_MESSAGE_LENGTH + 1];
+char current_letter[MAX_LETTER_LENGTH + 1];
 
 void interpret_buttons() {
         if(button_pressed == 2) {
 
-                if(b2_press_time>LETTER_SEPERATION) {
+                if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter)==MAX_LETTER_LENGTH)) {
+                        update_string(message,MAX_MESSAGE_LENGTH,decode());
                         if(b2_press_time>WORD_SEPERATION) {
-                                current_letter = "    ";
+                                strcpy(current_letter, "    ");
+                                update_string(message,MAX_MESSAGE_LENGTH,decode());
                         }
-                        update_string(message,MAX_MESSAGE_LENGTH,decode(current_letter));
+                        
                 }
         }
         else if(button_pressed == 0) {
@@ -75,8 +72,8 @@ void interpret_buttons() {
                         update_string(current_letter,MAX_LETTER_LENGTH,'-');
         }
         else if(button_pressed == 1) {
-                send_data();
-                message = "";
+//              send_data();
+                memset(message, 0, sizeof(message));
         }
         update_display();
 }
@@ -92,11 +89,16 @@ void update_string(char* str, uint8_t max_len, char letter)
 }
 
 
-char decode_letter()
+char decode()
 {
-	for (int i = 0; i < 27; i++)
+        uint8_t i;
+	for (i = 0; i < 27; i++)
 	{
-                if(!strncmp(*(morse_table+i), current_letter, MAX_LETTER_LENGTH))
+                if(!strncmp(*(morse_table+i), current_letter, MAX_LETTER_LENGTH)) {
+                        printf("Match found: %c",*(alphabet+i));
                         return *(alphabet+i);
+                }
 	}
+        printf("Decode Fail: No match found.\n");
+        return -1;
 }

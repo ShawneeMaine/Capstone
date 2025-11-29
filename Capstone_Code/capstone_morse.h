@@ -15,7 +15,9 @@
 
 void interpret_buttons();
 void update_string(char* str, uint8_t max_len, char letter);
-char decode_letter();
+char decode();
 
+char message[MAX_MESSAGE_LENGTH + 1];
+char current_letter[MAX_LETTER_LENGTH+1];
 
 #endif

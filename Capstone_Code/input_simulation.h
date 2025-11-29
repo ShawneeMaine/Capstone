@@ -1,11 +1,7 @@
-#ifndef CAPSTONE_INPUT_H
-#define CAPSTONE_INPUT_H
+#ifndef INPUT_SIM_H
+#define INPUT_SIM_H
 
 #include <stdint.h>
-
-//The libraries used to program the ATTINY84
-//#include <avr/io.h>
-//#include <avr/interrupt.h>
 
 #define BUTTON1_PIN PA2
 #define BUTTON2_PIN PA3
@@ -21,5 +17,9 @@ void read_buttons();
 
 extern uint8_t button_pressed;
 extern uint32_t b2_press_time;
+
+//For testing purposes only:
+extern volatile uint32_t last_change_b2;
+extern volatile uint8_t deb_flag;
 
 #endif
