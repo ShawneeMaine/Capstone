@@ -42,13 +42,11 @@ HOST_EXE = test.exe
 
 host: $(HOST_EXE)
 
-%.o: %.c
-	$(HOST_CC) $(HOST_CFLAGS) -c $< -o $@
-
-$(HOST_EXE): $(HOST_OBJS)
-	$(HOST_CC) $(HOST_CFLAGS) $^ -o $@
-
-clean-host:
-	rm -f $(HOST_OBJS) $(HOST_EXE)
-
-.PHONY: all clean host clean-host flash
+#%.o: %.c
+#	$(HOST_CC) $(HOST_CFLAGS) -c $< -o $@
+#
+#$(HOST_EXE): $(HOST_OBJS)
+#	$(HOST_CC) $(HOST_CFLAGS) $^ -o $@
+#
+#clean-host:
+#	rm -f $(HOST_OBJS) $(HOST_EXE)

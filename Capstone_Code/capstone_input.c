@@ -9,6 +9,8 @@ Button 2 is connected to pin PA3 on the ATTINY. This is the MORSE CODE INPUT but
 
 
 #include "capstone_input.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 volatile uint32_t millis = 0;
 

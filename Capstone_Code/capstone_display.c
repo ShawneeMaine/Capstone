@@ -4,6 +4,8 @@
 
 void update_display()
 {
+/*
+	//simulation testing printfs
 	printf("Letter: ");
 	printf(current_letter);
 	printf("\n");
@@ -11,4 +13,5 @@ void update_display()
 	printf("Message: ");
 	printf(message);
 	printf("\n");
+*/
 }

@@ -1,8 +1,8 @@
 #include "capstone_morse.h"
 
-//#include "capstone_input.h"
+#include "capstone_input.h"
 //For testing purposes only the real header is replaced with the simulation header
-#include "input_simulation.h"
+//#include "input_simulation.h"
 
 #include "capstone_display.h"
 #include <stdlib.h>
