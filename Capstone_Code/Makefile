@@ -1,7 +1,8 @@
 #Toolchain
 MCU      = attiny84
-AVR_CC   = avr-gcc
-AVR_CFLAGS = -mmcu=$(MCU) -Wall -Os
+AVR_CC   = avr-gcc 
+F_CPU = 1000000UL
+AVR_CFLAGS = -mmcu=$(MCU) -Wall -Os -DF_CPU=$(F_CPU)
 OBJCOPY  = avr-objcopy
 AVRSIZE  = avr-size
 
@@ -11,7 +12,6 @@ HOST_CFLAGS = -Wall -O2
 #Directories
 SRC_DIR   = src
 INC_DIR   = inc
-LIB_DIR   = lib
 TEST_DIR = test
 BUILD_DIR = build
 

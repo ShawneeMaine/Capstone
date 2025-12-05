@@ -7,7 +7,14 @@ The file was technically created earlier, but contained nothing but a single pri
 #include "capstone_display.h"
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "capstone_morse.h"
+#include "capstone_input.h"
+#include "usi_i2c.h"
+
+#define CHAR_SIZE 6
+
+uint8_t buffer[6];
 
 const uint8_t ssd1306xled_font6x8 []={ 
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // space
@@ -52,5 +59,34 @@ void update_display()
 	printf("\n");
 */
 
+if(strlen(message) > 20) {
+	strcpy(message, "MSG SIZE ERROR");
+	display_message();
+	return;
+}
+display_message();
 
+}
+
+void display_message() {
+	uint8_t i;
+    uint8_t j;
+	uint8_t k;
+	uint8_t cursor_col = 0;
+	uint8_t len = strlen(message);
+	char current_letter;
+	for(j=0; j < len; j++) {
+		current_letter = message[j];
+		for (i = 0; i < 27; i++) {
+			if(current_letter == alphabet[i]) {
+				for(k=0; k < 6; k++)
+					buffer[k] = ssd1306xled_font6x8[CHAR_SIZE*i+k];
+				break;
+			}
+		}
+		oled_write_char6(buffer);
+		cursor_col = cursor_col + CHAR_SIZE;
+		oled_set_cursor(0, cursor_col);
+
+	}
 }

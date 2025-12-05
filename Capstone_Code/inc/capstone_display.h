@@ -2,5 +2,6 @@
 #define CAPSTONE_DISPLAY_H
 
 void update_display();
+void display_message();
 
 #endif

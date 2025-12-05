@@ -19,5 +19,6 @@ char decode();
 
 extern char message[MAX_MESSAGE_LENGTH + 1];
 extern char current_letter[MAX_LETTER_LENGTH+1];
+extern const char alphabet[];
 
 #endif
