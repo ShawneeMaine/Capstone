@@ -1,52 +1,63 @@
-AVR_CC = avr-gcc
-MCU = attiny84
-F_CPU = 1000000UL
-AVR_CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -Wall -Os
-OBJCOPY = avr-objcopy
-AVRSIZE = avr-size
+#Toolchain
+MCU      = attiny84
+AVR_CC   = avr-gcc
+AVR_CFLAGS = -mmcu=$(MCU) -Wall -Os
+OBJCOPY  = avr-objcopy
+AVRSIZE  = avr-size
 
-#firmware source files
-AVR_SRCS = capstone_main.c capstone_display.c capstone_morse.c capstone_input.c
-AVR_OBJS = $(AVR_SRCS:.c=.o)
-AVR_HEX = capstone.hex
-AVR_ELF = capstone.elf
+HOST_CC  = gcc
+HOST_CFLAGS = -Wall -O2
 
-#PC test
-HOST_CC = gcc
-HOST_CFLAGS = -Wall -O2 -DHOST
-HOST_SRCS = test.c capstone_display.c capstone_input.c capstone_morse.c
-HOST_OBJS = $(HOST_SRCS:.c=.o)
-HOST_EXE = test.exe
+#Directories
+SRC_DIR   = src
+INC_DIR   = inc
+LIB_DIR   = lib
+TEST_DIR = test
+BUILD_DIR = build
 
-#default target
-all: $(AVR_HEX)
+#Find sources
+#AVR firmware: all .c files except test files
+AVR_SRCS = $(wildcard $(SRC_DIR)/*.c)
+AVR_OBJS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(AVR_SRCS))
+AVR_ELF  = $(BUILD_DIR)/capstone.elf
+AVR_HEX  = $(BUILD_DIR)/capstone.hex
 
-#AVR firmware build
-%.o: %.c
-	$(AVR_CC) $(AVR_CFLAGS) -c $< -o $@
+#Host test: all test/something.c files | exclude src/capstone_input.c, src/capstone_morse_test.c
+HOST_SRCS = $(filter-out $(SRC_DIR)/capstone_main.c $(SRC_DIR)/capstone_input.c $(SRC_DIR)/capstone_morse.c, $(AVR_SRCS)) $(wildcard $(TEST_DIR)/*.c)
+HOST_OBJS = $(addprefix $(BUILD_DIR)/,$(notdir $(HOST_SRCS:.c=.test.o)))
+HOST_EXE  = $(BUILD_DIR)/test.exe
+
+#Default target (AVR build)
+all: $(AVR_HEX) avr-size-report
+
+#AVR rules
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	$(AVR_CC) $(AVR_CFLAGS) -I$(INC_DIR) -c $< -o $@
 
 $(AVR_ELF): $(AVR_OBJS)
 	$(AVR_CC) $(AVR_CFLAGS) $^ -o $@
-	$(AVRSIZE) --target=elf32-avr $@
 
 $(AVR_HEX): $(AVR_ELF)
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
+#Host test rules
+test: $(HOST_EXE)
+
+$(BUILD_DIR)/%.test.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	$(HOST_CC) $(HOST_CFLAGS) -I$(INC_DIR) -c $< -o $@
+
+$(HOST_EXE): $(HOST_OBJS)
+	$(HOST_CC) $(HOST_CFLAGS) $^ -o $@
+
+#Make build directory
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+#Size report for AVR build
+avr-size-report: $(AVR_ELF)
+	@echo "AVR Firmware Size Report"
+	$(AVRSIZE) --target=elf32-avr $(AVR_ELF)
+	@echo
+
 clean:
-	rm -f *.o *.elf *.hex
-
-#host test harness build
-HOST_SRCS = test.c capstone_display.c input_simulation.c capstone_morse.c
-HOST_OBJS = $(HOST_SRCS:.c=.o)
-HOST_EXE = test.exe
-
-host: $(HOST_EXE)
-
-#%.o: %.c
-#	$(HOST_CC) $(HOST_CFLAGS) -c $< -o $@
-#
-#$(HOST_EXE): $(HOST_OBJS)
-#	$(HOST_CC) $(HOST_CFLAGS) $^ -o $@
-#
-#clean-host:
-#	rm -f $(HOST_OBJS) $(HOST_EXE)
+	rm -rf $(BUILD_DIR)

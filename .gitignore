@@ -1,33 +1,11 @@
-# =====================================================
-# Altium Designer – ignore generated files (safe list)
-# =====================================================
+#Altium Designer | ignore output, history files:
+Capstone_PCB/Project Outputs for Capstone_mk1
+Capstone_PCB/Project Logs for Capstone_mk1
+Capstone_PCB/Out jobs/Capstone_mk1.OutJob
+Capstone_PCB/History
+Capstone_PCB/__Previews
+Capstone_PCB/*.bak
+Capstone_PCB/*_autosave_*
 
-# --- Output jobs and generated outputs ---
-Project Outputs/*
-/Project Outputs/
-/OutputJobFiles/
-
-# --- Simulation output ---
-*.sim
-*.sw?
-
-# --- FPGA or embedded tool outputs ---
-*.chm
-*.elf
-*.hex
-*.bin
-*.log
-
-# --- Backups / temp / cache ---
-History/*
-__Previews/*
-Generated/*
-*.bak
-*.log
-*.tmp
-*.pcdl
-*.index
-
-# --- Lock files ---
-*.lck
-*.lock
+#Code | Ignore build directory
+Capstone_Code/build/
