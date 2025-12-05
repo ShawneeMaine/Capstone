@@ -41,9 +41,13 @@ $(AVR_HEX): $(AVR_ELF)
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
 #Host test rules
+.PHONY: test
+
 test: $(HOST_EXE)
 
-$(BUILD_DIR)/%.test.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+vpath %.c $(SRC_DIR) $(TEST_DIR)
+
+$(BUILD_DIR)/%.test.o: %.c | $(BUILD_DIR)
 	$(HOST_CC) $(HOST_CFLAGS) -I$(INC_DIR) -c $< -o $@
 
 $(HOST_EXE): $(HOST_OBJS)
