@@ -68,6 +68,7 @@ display_message();
 
 }
 
+
 void display_message() {
 	uint8_t i;
     uint8_t j;
@@ -89,4 +90,12 @@ void display_message() {
 		oled_set_cursor(0, cursor_col);
 
 	}
+}
+
+
+//Testing function
+void test1() {
+ 	strcpy(message, "BEN");
+	display_message();
+	return; 
 }

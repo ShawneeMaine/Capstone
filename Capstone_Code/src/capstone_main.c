@@ -15,6 +15,10 @@ int main(void) {
     i2c_init();
     oled_init();
 
+    //testing code:
+    test1();
+    while(1);
+
     while (1) {
         read_buttons();
         interpret_buttons();

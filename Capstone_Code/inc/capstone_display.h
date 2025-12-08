@@ -3,5 +3,6 @@
 
 void update_display();
 void display_message();
+void test1();
 
 #endif
