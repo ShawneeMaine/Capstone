@@ -8,10 +8,18 @@ This is the main logic code for the capstone project that will run on an ATTINY8
 #include "capstone_morse.h"
 #include "capstone_display.h"
 
+#define STARTUP_DELAY 20000
+
 
 int main(void) {
     master_button_init();
     oled_set_cursor(0, 0);
+
+    //programming delay
+    uint32_t a = millis_now();
+    uint32_t b = a;
+    while(b - a < STARTUP_DELAY) {b = millis_now();}
+
     i2c_init();
     oled_init();
 
