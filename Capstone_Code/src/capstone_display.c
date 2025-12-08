@@ -16,7 +16,7 @@ The file was technically created earlier, but contained nothing but a single pri
 
 uint8_t buffer[6];
 
-const uint8_t ssd1306xled_font6x8 []={ 
+const uint8_t ssd1306xled_font6x8 []={
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // space
   0x00, 0x7C, 0x12, 0x11, 0x12, 0x7C, // A
   0x00, 0x7F, 0x49, 0x49, 0x49, 0x36, // B
@@ -59,19 +59,19 @@ void update_display()
 	printf("\n");
 */
 
-if(strlen(message) > 20) {
-	strcpy(message, "MSG SIZE ERROR");
+	if(strlen(message) > 20) {
+		strcpy(message, "MSG SIZE ERROR");
+		display_message();
+		return;
+	}
 	display_message();
-	return;
-}
-display_message();
 
 }
 
 
 void display_message() {
 	uint8_t i;
-    uint8_t j;
+    	uint8_t j;
 	uint8_t k;
 	uint8_t cursor_col = 0;
 	uint8_t len = strlen(message);
@@ -97,5 +97,5 @@ void display_message() {
 void test1() {
  	strcpy(message, "BEN");
 	display_message();
-	return; 
+	return;
 }
