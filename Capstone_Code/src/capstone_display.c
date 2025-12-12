@@ -95,7 +95,7 @@ void display_message() {
 
 //Testing function
 void test1() {
- 	strcpy(message, "BEN");
+ 	strcpy(message, "BENJAMIN MOCK");
 	display_message();
 	return;
 }
