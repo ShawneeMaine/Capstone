@@ -10,9 +10,10 @@ The file was technically created earlier, but contained nothing but a single pri
 #include <string.h>
 #include "capstone_morse.h"
 #include "capstone_input.h"
-#include "usi_i2c.h"
+#include "wrapper.h"
 
 #define CHAR_SIZE 6
+#define OLED_ADDR 0x3C
 
 uint8_t buffer[6];
 
@@ -69,33 +70,145 @@ void update_display()
 }
 
 
-void display_message() {
-	uint8_t i;
-    	uint8_t j;
-	uint8_t k;
-	uint8_t cursor_col = 0;
-	uint8_t len = strlen(message);
-	char current_letter;
-	for(j=0; j < len; j++) {
-		current_letter = message[j];
-		for (i = 0; i < 27; i++) {
-			if(current_letter == alphabet[i]) {
-				for(k=0; k < 6; k++)
-					buffer[k] = ssd1306xled_font6x8[CHAR_SIZE*i+k];
-				break;
-			}
-		}
-		oled_write_char6(buffer);
-		cursor_col = cursor_col + CHAR_SIZE;
-		oled_set_cursor(0, cursor_col);
+void display_message(void)
+{
+    uint8_t len = strlen(message);
+    uint8_t cursor_col = 0;
 
-	}
+    //Start at top-left always.
+    oled_set_cursor(0, 0);
+
+    for (uint8_t j = 0; j < len; j++)
+    {
+        char current_letter = message[j];
+
+        //Find matching font index
+        uint8_t idx = 0xFF;
+        for (uint8_t i = 0; i < 27; i++)
+        {
+            if (alphabet[i] == current_letter)
+            {
+                idx = i;
+                break;
+            }
+        }
+
+        //Skip unknown characters (redundant error checking)
+        if (idx == 0xFF)
+            continue;
+
+        //Load 6 bytes of font data
+        for (uint8_t k = 0; k < 6; k++)
+            buffer[k] = ssd1306xled_font6x8[idx * CHAR_SIZE + k];
+
+        //Write to screen
+        oled_write_char6(buffer);
+
+        //Move cursor to next char
+        cursor_col += CHAR_SIZE;
+        oled_set_cursor(0, cursor_col);
+    }
 }
 
 
 //Testing function
 void test1() {
- 	strcpy(message, "BENJAMIN MOCK");
+ 	strcpy(message, "TEST");
 	display_message();
 	return;
+}
+
+
+//I2C functions
+void oled_send_command(uint8_t cmd)
+{
+    twm_begin_transmission(OLED_ADDR);
+    twm_write(0x00);
+    twm_write(cmd);
+    twm_end_transmission();
+}
+
+
+void oled_send_data(const uint8_t *data, uint8_t len)
+{
+    twm_begin_transmission(OLED_ADDR);
+    twm_write(0x40);   // control byte: Co = 0, D/C# = 1 (data)
+    for (uint8_t i = 0; i < len; i++)
+        twm_write(data[i]);
+    twm_end_transmission();
+}
+
+
+void oled_set_cursor(uint8_t page, uint8_t column)
+{
+    oled_send_command(0xB0 | (page & 0x0F));     // page
+    oled_send_command(0x00 | (column & 0x0F));   // lower col
+    oled_send_command(0x10 | (column >> 4));     // upper col
+}
+
+
+void oled_write_char6(const uint8_t data[6])
+{
+    oled_send_data(data, 6);
+}
+
+
+void oled_init(void)
+{
+    // TinyWireM must be initialized before this!
+    // tw_init();  <-- called in main
+
+    oled_send_command(0xAE); // display OFF
+
+    oled_send_command(0xD5); // Set display clock divide
+    oled_send_command(0x80); // Suggested ratio
+
+    oled_send_command(0xA8); // Set multiplex
+    oled_send_command(0x1F); // 0x1F = 31 → for 128x32
+
+    oled_send_command(0xD3); // Display offset
+    oled_send_command(0x00); // 0 offset
+
+    oled_send_command(0x40); // Set display start line to 0
+
+    oled_send_command(0x8D); // Charge pump
+    oled_send_command(0x14); // Enable charge pump
+
+    oled_send_command(0x20); // Memory mode
+    oled_send_command(0x00); // Horizontal addressing mode
+
+    oled_send_command(0xA1); // Segment remap (mirror horizontally)
+    oled_send_command(0xC8); // COM scan direction (remap vertically)
+
+    oled_send_command(0xDA); // Set COM pins config
+    oled_send_command(0x02); // *128x32 specific* (NOT 0x12!)
+
+    oled_send_command(0x81); // Contrast
+    oled_send_command(0x8F);
+
+    oled_send_command(0xD9); // Pre-charge
+    oled_send_command(0xF1);
+
+    oled_send_command(0xDB); // VCOM detect
+    oled_send_command(0x40);
+
+    oled_send_command(0xA4); // Display all on (resume RAM)
+    oled_send_command(0xA6); // Normal display (not inverted)
+
+    oled_send_command(0x2E); // Deactivate scroll (safety)
+
+    oled_send_command(0xAF); // Display ON
+}
+
+
+void oled_clear(void)
+{
+    for (uint8_t page = 0; page < 4; page++) { // 128x32 = 4 pages
+        oled_set_cursor(page, 0);
+        for (uint8_t i = 0; i < 128; i++) {
+            uint8_t zero = 0;
+            oled_send_data(&zero, 1);
+        }
+    }
+    oled_set_cursor(0, 0);
 }
