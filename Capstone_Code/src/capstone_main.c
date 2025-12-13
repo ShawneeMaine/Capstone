@@ -30,8 +30,11 @@ int main(void) {
     oled_set_cursor(0, 0);
 
     //I2C LED test
-    led_i2c_test();
+//    led_i2c_test();
 
+    //Display test
+    test1();
+    while(1);
 
     while (1) {
         read_buttons();
