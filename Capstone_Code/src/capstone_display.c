@@ -52,6 +52,8 @@ const uint8_t ssd1306xled_font6x8 []={
   0x00, 0x63, 0x14, 0x08, 0x14, 0x63, // X
   0x00, 0x07, 0x08, 0x70, 0x08, 0x07, // Y
   0x00, 0x61, 0x51, 0x49, 0x45, 0x43, // Z
+  0x00, 0x08, 0x08, 0x08, 0x08, 0x08, // -
+  0x00, 0x00, 0x60, 0x60, 0x00, 0x00, // .
 };
 
 void update_display()
@@ -77,7 +79,7 @@ void update_display()
 }
 
 
-void display_message(void)
+void display_message()
 {
     uint8_t len = strlen(message);
     uint8_t cursor_col = 0;
@@ -91,7 +93,7 @@ void display_message(void)
 
         //Find matching font index
         uint8_t idx = 0xFF;
-        for (uint8_t i = 0; i < 27; i++)
+        for (uint8_t i = 0; i < 29; i++)
         {
             if (alphabet[i] == current_letter)
             {

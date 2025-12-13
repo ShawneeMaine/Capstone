@@ -51,7 +51,7 @@ const char* morse_table[] =
 };
 
 //Includes a space at the start
-const char alphabet[] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char alphabet[] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ-.";
 
 char message[MAX_MESSAGE_LENGTH + 1];
 char current_letter[MAX_LETTER_LENGTH + 1];
@@ -78,14 +78,13 @@ void interpret_buttons() {
 		else if(b2_press_time>SEND_SEPARATION) {
 			update_string(message,MAX_MESSAGE_LENGTH,decode());
 			//send_data();
-
+			display_message();
 			memset(message,0,sizeof(message));
 			memset(current_letter,0,sizeof(current_letter));
 		}
         }
 	//reset button_pressed so it only iterates once
 	button_pressed = 2;
-        display_message();
 }
 
 
