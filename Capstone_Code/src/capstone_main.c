@@ -33,8 +33,7 @@ int main(void) {
 //    led_i2c_test();
 
     //Display test
-    test1();
-    while(1);
+//    test1();
 
     while (1) {
         read_buttons();

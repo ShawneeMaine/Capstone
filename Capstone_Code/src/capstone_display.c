@@ -120,7 +120,7 @@ void display_message(void)
 
 //Testing function
 void test1() {
- 	strcpy(message, "TEST");
+ 	strcpy(message, "TESTTESTTEST");
 	display_message();
 	return;
 }
