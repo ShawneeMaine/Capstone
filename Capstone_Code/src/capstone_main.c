@@ -13,8 +13,10 @@ This is the main logic code for the capstone project that will run on an ATTINY8
 
 int main(void) {
 
+    //This enables interrupts and starts the timers, so it must always fun first
+    master_button_init();
 
-    //LED test
+    //I2C LED test
     led_test();
     //testing code:
     while(1);
@@ -29,7 +31,6 @@ int main(void) {
     twm_init();
 
 
-    master_button_init();
     oled_init(); //Send SSD1306 init sequence
     oled_clear();
     oled_set_cursor(0, 0);

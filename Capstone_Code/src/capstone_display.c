@@ -20,7 +20,7 @@ The file was technically created earlier, but contained nothing but a single pri
 #define LED_PIN PA5
 #define LED_DDR DDRA
 #define LED_PORT PORTA
-
+#define BLINK_DELAY 500
 
 uint8_t buffer[6];
 
@@ -251,9 +251,21 @@ void led_i2c_test(void) {
 void led_test(void) {
     // Set PA5 as output
     LED_DDR |= (1 << LED_PIN);
+	uint32_t a;
+	uint32_t b;
 
     while (1) {
+	    a = millis_now();
+    	b = a;
+    	while(b - a < BLINK_DELAY) {b = millis_now();}
 		//LED on
 		LED_PORT |= (1 << LED_PIN);
+
+	    a = millis_now();
+    	b = a;
+    	while(b - a < BLINK_DELAY) {b = millis_now();}
+		//LED off
+		LED_PORT &= ~(1 << LED_PIN);
+
     }
 }

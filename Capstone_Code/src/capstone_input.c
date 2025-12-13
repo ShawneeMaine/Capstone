@@ -95,7 +95,7 @@ uint32_t get_b2_timestamp() {
 //Initialize Timer0 for 1ms intervals
 void timer0_init() {
     TCCR0A |= (1 << WGM01); //Clear Timer on Compare (CTC) mode
-    TCCR0B = (1 << CS01);   //Prescale 8
+    TCCR0B |= (1 << CS01);   //Prescale 8
     OCR0A = 124;    //1ms at 1MHz
     TIMSK0 = (1 << OCIE0A); //Enable interrupts
 }
@@ -117,7 +117,6 @@ void master_button_init() {
     io_init();
     timer0_init();
     sei();
-
 }
 
 
