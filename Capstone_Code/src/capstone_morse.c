@@ -11,9 +11,12 @@
 //testing libraries
 //#include <unistd.h>
 //attiny headers
-//#include <avr/io.h>
-//#include <util/delay.h>
+#include <avr/io.h>
+#include <util/delay.h>
 
+#define LED_PIN PA5
+#define LED_DDR DDRA
+#define LED_PORT PORTA
 
 //morse table for decoding
 const char* morse_table[] =
@@ -55,7 +58,8 @@ char current_letter[MAX_LETTER_LENGTH + 1];
 
 void interpret_buttons() {
         if(button_pressed == 2) {
-
+		LED_DDR |= (1<<LED_PIN);
+		LED_PORT |= (1<<LED_PIN);
                 if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter) == MAX_LETTER_LENGTH)) {
                         update_string(message,MAX_MESSAGE_LENGTH,decode());
                         if(b2_press_time>WORD_SEPERATION) {
@@ -66,6 +70,7 @@ void interpret_buttons() {
                 }
         }
         else if(button_pressed == 0) {
+		LED_PORT &= ~(1<<LED_PIN);
                 if(abs(b2_press_time-DOT) < TOL)
                         update_string(current_letter,MAX_LETTER_LENGTH,'.');
                 else if(abs(b2_press_time-DASH) < TOL)

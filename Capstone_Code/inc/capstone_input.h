@@ -7,14 +7,12 @@
 //#include <avr/io.h>
 //#include <avr/interrupt.h>
 
-#define BUTTON1_PIN PA2
 #define BUTTON2_PIN PA3
 
 //The debounce time in milliseconds
-#define DEBOUNCE_MS 1000
+#define DEBOUNCE_MS 500
 
 uint32_t millis_now();
-uint32_t get_b1_timestamp();
 uint32_t get_b2_timestamp();
 void timer0_init();
 void io_init();

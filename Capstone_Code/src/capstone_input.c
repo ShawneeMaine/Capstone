@@ -12,27 +12,22 @@ Button 2 is connected to pin PA3 on the ATTINY. This is the MORSE CODE INPUT but
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define LED_PIN PA5
-#define LED_DDR DDRA
-#define LED_PORT PORTA
-
 volatile uint32_t millis = 0;
 
 //Raw states from ISR
-volatile uint8_t raw_b1 = 1;
 volatile uint8_t raw_b2 = 1;
 
 //Debouncing flag
 volatile uint8_t deb_flag = 0;
 
 //Timestamp used for debounce filtering
-volatile uint32_t last_change_b1 = 0;
 volatile uint32_t last_change_b2 = 0;
 
 //For measuring duration of Button 2
 uint32_t b2_prev_timestamp = 0;
 uint32_t b2_press_time = 0;//in ms
 
+//stable state trackers
 uint8_t deb_b2 = 1;
 
 //Tracker of what button is currently pressed(0=None)
@@ -51,13 +46,6 @@ ISR(PCINT0_vect) {
     uint8_t pins = PINA;
     uint32_t now = millis;
     deb_flag = 1;
-
-    //Button 1
-    uint8_t current_b1 = (pins & (1 << BUTTON1_PIN)) ? 1 : 0;
-    if (current_b1 != raw_b1) {
-        raw_b1 = current_b1;
-        last_change_b1 = now;   //Debounce timer
-    }
 
     //Button 2
     uint8_t current_b2 = (pins & (1 << BUTTON2_PIN)) ? 1 : 0;
@@ -78,16 +66,7 @@ uint32_t millis_now() {
 }
 
 
-//Also for last_change_b1 and b2
-uint32_t get_b1_timestamp() {
-    uint32_t b1;
-    cli();  //Disable interrupts
-    b1 = last_change_b1;
-    sei();  //Turn interrupts back on
-    return b1;
-}
-
-
+//Also for last_change_b2
 uint32_t get_b2_timestamp() {
     uint32_t b2;
     cli();  //Disable interrupts
@@ -95,7 +74,6 @@ uint32_t get_b2_timestamp() {
     sei();  //Turn interrupts back on
     return b2;
 }
-
 
 //Initialize Timer0 for 1ms intervals
 void timer0_init() {
@@ -128,17 +106,9 @@ void master_button_init() {
 //Button reading and software debounce
 void read_buttons() {
     uint32_t now = millis_now();
-    uint32_t b1_current_timestamp = get_b1_timestamp();
     uint32_t b2_current_timestamp = get_b2_timestamp();
 
    if(deb_flag) {//Button press detected
-        if(b1_current_timestamp > b2_current_timestamp) {   //Debound button 1
-            if ((now - b1_current_timestamp) >= DEBOUNCE_MS) {
-                deb_flag = 0;
-                button_pressed = (button_pressed == 0) ? 1 : 0;
-            }
-        }
-        else {  //Debound button 2
             if ((now - b2_current_timestamp) >= DEBOUNCE_MS) {
 		if (raw_b2 != deb_b2) {
 		    deb_b2 = raw_b2;
@@ -151,18 +121,9 @@ void read_buttons() {
 			b2_prev_timestamp = b2_current_timestamp;
 			button_pressed = 0;
 		    }
-		    LED_DDR |= (1<<LED_PIN);
-		    LED_PORT |= (1<<LED_PIN);
 		    deb_flag = 0;
 		}
-		/*LED_DDR |= (1<<LED_PIN);
-		LED_PORT |= (1<<LED_PIN);
-                deb_flag = 0;
-                b2_press_time = b2_current_timestamp-b2_prev_timestamp;
-		b2_prev_timestamp = b2_current_timestamp;
-                button_pressed = (button_pressed == 0) ? 2 : 0;*/
             }
-        }
      }
 
 
