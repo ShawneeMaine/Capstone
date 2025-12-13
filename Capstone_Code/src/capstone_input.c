@@ -87,11 +87,11 @@ void timer0_init() {
 //Initialize GPIO and pin-change interrupts
 void io_init() {
     //Enable pullups
-    PORTA |= (1 << BUTTON1_PIN) | (1 << BUTTON2_PIN);
+    PORTA |= (1 << BUTTON2_PIN);
 
-    //Enable pin change interrupts on PA2 & PA3 (PCINT2 & PCINT3)
+    //Enable pin change interrupts on PA3 (PCINT3)
     GIMSK |= (1 << PCIE0);  //enable PCINT[7:0]
-    PCMSK0 |= (1 << PCINT2) | (1 << PCINT3);    //unmask pins
+    PCMSK0 |= (1 << PCINT3);    //unmask pins
 }
 
 
@@ -114,7 +114,7 @@ void read_buttons() {
 		    deb_b2 = raw_b2;
 		    if (deb_b2 == 0) {
 			b2_prev_timestamp = b2_current_timestamp;
-			button_pressed = 2;
+			button_pressed = 1;
 		    }
 		    else {
 			b2_press_time = b2_current_timestamp - b2_prev_timestamp;

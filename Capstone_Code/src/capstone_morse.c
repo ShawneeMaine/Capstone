@@ -9,7 +9,7 @@
 #include <string.h>
 //#include <stdio.h>
 //testing libraries
-//#include <unistd.h>
+#include <unistd.h>
 //attiny headers
 #include <avr/io.h>
 #include <util/delay.h>
@@ -57,7 +57,7 @@ char message[MAX_MESSAGE_LENGTH + 1];
 char current_letter[MAX_LETTER_LENGTH + 1];
 
 void interpret_buttons() {
-        if(button_pressed == 2) {
+        if(button_pressed == 1) { //button pressed, handle last unpress
 		LED_DDR |= (1<<LED_PIN);
 		LED_PORT |= (1<<LED_PIN);
                 if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter) == MAX_LETTER_LENGTH)) {
@@ -69,19 +69,23 @@ void interpret_buttons() {
                         memset(current_letter,0,sizeof(current_letter));
                 }
         }
-        else if(button_pressed == 0) {
+        else if(button_pressed == 0) { //button unpressed, handle last press
 		LED_PORT &= ~(1<<LED_PIN);
                 if(abs(b2_press_time-DOT) < TOL)
                         update_string(current_letter,MAX_LETTER_LENGTH,'.');
                 else if(abs(b2_press_time-DASH) < TOL)
                         update_string(current_letter,MAX_LETTER_LENGTH,'-');
+		else if(b2_press_time>SEND_SEPARATION) {
+			update_string(message,MAX_MESSAGE_LENGTH,decode());
+			//send_data();
+
+			memset(message,0,sizeof(message));
+			memset(current_letter,0,sizeof(current_letter));
+		}
         }
-        else if(button_pressed == 1) {
-//              send_data();
-                memset(message, 0, sizeof(message));
-                memset(current_letter,0,sizeof(current_letter));
-        }
-        update_display();
+	//reset button_pressed so it only iterates once
+	button_pressed = 2;
+        display_message();
 }
 
 
