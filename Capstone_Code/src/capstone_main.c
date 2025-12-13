@@ -12,23 +12,29 @@ This is the main logic code for the capstone project that will run on an ATTINY8
 
 
 int main(void) {
+
+
+    //LED test
+    led_test();
+    //testing code:
+    while(1);
+
     //programming delay
     uint32_t a = millis_now();
     uint32_t b = a;
     while(b - a < STARTUP_DELAY) {b = millis_now();}
 
-    master_button_init();
 
     //I2C init
-    twm_init();  
+    twm_init();
+
+
+    master_button_init();
     oled_init(); //Send SSD1306 init sequence
     oled_clear();
     oled_set_cursor(0, 0);
 
 
-    //testing code:
-    test1();
-    while(1);
 
     while (1) {
         read_buttons();

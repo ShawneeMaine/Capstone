@@ -11,9 +11,16 @@ The file was technically created earlier, but contained nothing but a single pri
 #include "capstone_morse.h"
 #include "capstone_input.h"
 #include "wrapper.h"
+#include <avr/io.h>
+#include <util/delay.h>
 
 #define CHAR_SIZE 6
 #define OLED_ADDR 0x3C
+
+#define LED_PIN PA5
+#define LED_DDR DDRA
+#define LED_PORT PORTA
+
 
 uint8_t buffer[6];
 
@@ -211,4 +218,42 @@ void oled_clear(void)
         }
     }
     oled_set_cursor(0, 0);
+}
+
+
+void led_i2c_test(void) {
+    // Set PA5 as output
+    LED_DDR |= (1 << LED_PIN);
+
+    twm_init();
+
+    while(1) {
+        twm_begin_transmission(OLED_ADDR);
+        uint8_t err = twm_end_transmission();
+        if (err == 0) {
+            // LED on
+            LED_PORT |= (1 << LED_PIN);
+            _delay_ms(100);
+            // LED off
+            LED_PORT &= ~(1 << LED_PIN);
+            _delay_ms(100);
+        } else {
+            // LED on
+            LED_PORT |= (1 << LED_PIN);
+            _delay_ms(3000);
+            LED_PORT &= ~(1 << LED_PIN);
+            _delay_ms(3000);
+        }
+    }
+}
+
+// LED blink test
+void led_test(void) {
+    // Set PA5 as output
+    LED_DDR |= (1 << LED_PIN);
+
+    while (1) {
+		//LED on
+		LED_PORT |= (1 << LED_PIN);
+    }
 }

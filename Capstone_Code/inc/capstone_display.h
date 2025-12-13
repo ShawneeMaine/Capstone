@@ -11,6 +11,7 @@ void oled_set_cursor(uint8_t page, uint8_t column);
 void oled_write_char6(const uint8_t data[6]);
 void oled_clear(void);
 void oled_init(void);
-
+void led_i2c_test(void);
+void led_test(void);
 
 #endif
