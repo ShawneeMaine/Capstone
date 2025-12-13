@@ -16,25 +16,21 @@ int main(void) {
     //This enables interrupts and starts the timers, so it must always fun first
     master_button_init();
 
-    //I2C LED test
-    led_test();
-    //testing code:
-    while(1);
 
     //programming delay
     uint32_t a = millis_now();
     uint32_t b = a;
     while(b - a < STARTUP_DELAY) {b = millis_now();}
 
-
     //I2C init
     twm_init();
-
 
     oled_init(); //Send SSD1306 init sequence
     oled_clear();
     oled_set_cursor(0, 0);
 
+    //I2C LED test
+    led_i2c_test();
 
 
     while (1) {
