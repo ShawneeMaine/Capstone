@@ -12,6 +12,10 @@ Button 2 is connected to pin PA3 on the ATTINY. This is the MORSE CODE INPUT but
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#define LED_PIN PA5
+#define LED_DDR DDRA
+#define LED_PORT PORTA
+
 volatile uint32_t millis = 0;
 
 //Raw states from ISR
@@ -29,6 +33,7 @@ volatile uint32_t last_change_b2 = 0;
 uint32_t b2_prev_timestamp = 0;
 uint32_t b2_press_time = 0;//in ms
 
+uint8_t deb_b2 = 1;
 
 //Tracker of what button is currently pressed(0=None)
 uint8_t button_pressed=0;
@@ -126,8 +131,7 @@ void read_buttons() {
     uint32_t b1_current_timestamp = get_b1_timestamp();
     uint32_t b2_current_timestamp = get_b2_timestamp();
 
-
-    if(deb_flag) {//Button press detected
+   if(deb_flag) {//Button press detected
         if(b1_current_timestamp > b2_current_timestamp) {   //Debound button 1
             if ((now - b1_current_timestamp) >= DEBOUNCE_MS) {
                 deb_flag = 0;
@@ -136,13 +140,30 @@ void read_buttons() {
         }
         else {  //Debound button 2
             if ((now - b2_current_timestamp) >= DEBOUNCE_MS) {
+		if (raw_b2 != deb_b2) {
+		    deb_b2 = raw_b2;
+		    if (deb_b2 == 0) {
+			b2_prev_timestamp = b2_current_timestamp;
+			button_pressed = 2;
+		    }
+		    else {
+			b2_press_time = b2_current_timestamp - b2_prev_timestamp;
+			b2_prev_timestamp = b2_current_timestamp;
+			button_pressed = 0;
+		    }
+		    LED_DDR |= (1<<LED_PIN);
+		    LED_PORT |= (1<<LED_PIN);
+		    deb_flag = 0;
+		}
+		/*LED_DDR |= (1<<LED_PIN);
+		LED_PORT |= (1<<LED_PIN);
                 deb_flag = 0;
                 b2_press_time = b2_current_timestamp-b2_prev_timestamp;
 		b2_prev_timestamp = b2_current_timestamp;
-                button_pressed = (button_pressed == 0) ? 2 : 0;
+                button_pressed = (button_pressed == 0) ? 2 : 0;*/
             }
         }
-    }
+     }
 
 
 }

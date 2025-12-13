@@ -11,7 +11,7 @@
 #define BUTTON2_PIN PA3
 
 //The debounce time in milliseconds
-#define DEBOUNCE_MS 20
+#define DEBOUNCE_MS 1000
 
 uint32_t millis_now();
 uint32_t get_b1_timestamp();
