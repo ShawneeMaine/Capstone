@@ -63,7 +63,6 @@ void interpret_buttons() {
                                 update_string(message,MAX_MESSAGE_LENGTH,decode());
                         }
                         memset(current_letter,0,sizeof(current_letter));
-                        
                 }
         }
         else if(button_pressed == 0) {

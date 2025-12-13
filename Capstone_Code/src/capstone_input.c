@@ -138,6 +138,7 @@ void read_buttons() {
             if ((now - b2_current_timestamp) >= DEBOUNCE_MS) {
                 deb_flag = 0;
                 b2_press_time = b2_current_timestamp-b2_prev_timestamp;
+		b2_prev_timestamp = b2_current_timestamp;
                 button_pressed = (button_pressed == 0) ? 2 : 0;
             }
         }
