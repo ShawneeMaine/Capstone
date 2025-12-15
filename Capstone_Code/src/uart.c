@@ -144,11 +144,15 @@ uint8_t softuart_rx_read(void)
 
 void transmit_test(void) {
 	//Transmit test
-	if (softuart_rx_available())
-		{
-			strcpy(message, "A");
-			uint8_t c = softuart_rx_read();
-			// echo back received byte
-			softuart_tx_byte(c);
-		}
+	strcpy(message, "A");
+	softuart_tx_bytes((uint8_t*)message, 1);
+	while(1) {
+		if (softuart_rx_available())
+			{
+				uint8_t c = softuart_rx_read();
+				message[0] = c;
+				message[1] = '\0';
+				update_display();				
+			}
 	}
+}
