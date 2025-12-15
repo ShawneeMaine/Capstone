@@ -141,11 +141,11 @@ uint8_t softuart_rx_read(void)
 }
 
 #include <string.h>
-
+#include "capstone_display.h"
 void transmit_test(void) {
 	//Transmit test
-	strcpy(message, "A");
-	softuart_tx_bytes((uint8_t*)message, 1);
+	strcpy(message, "B");
+	softuart_tx_bytes((uint8_t*)"A", 1);
 	while(1) {
 		if (softuart_rx_available())
 			{
