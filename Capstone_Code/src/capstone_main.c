@@ -41,12 +41,7 @@ int main(void) {
     softuart_init();
 
     while (1) {
-    if (softuart_rx_available())
-        {
-            uint8_t c = softuart_rx_read();
-            // echo back received byte
-            softuart_tx_byte(c);
-        }
+
         read_buttons();
         interpret_buttons();
 

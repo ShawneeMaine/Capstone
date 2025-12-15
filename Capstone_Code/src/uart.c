@@ -1,6 +1,7 @@
 #include "uart.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "capstone_morse.h"
 
 #define BIT_TIME (F_CPU / SOFTUART_BAUD)  // Timer1 ticks per bit
 #define RX_SAMPLE_OFFSET (BIT_TIME / 2)  // sample in middle of bit
@@ -138,3 +139,16 @@ uint8_t softuart_rx_read(void)
     rx_tail = (rx_tail + 1) % SOFTUART_RX_BUFFER;
     return val;
 }
+
+#include <string.h>
+
+void transmit_test(void) {
+	//Transmit test
+	if (softuart_rx_available())
+		{
+			strcpy(message, "A");
+			uint8_t c = softuart_rx_read();
+			// echo back received byte
+			softuart_tx_byte(c);
+		}
+	}

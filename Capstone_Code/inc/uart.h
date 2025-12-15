@@ -26,5 +26,6 @@ void softuart_tx_bytes(const uint8_t *data, uint8_t len);
 
 // Optional: call in main loop to process completed TX if needed
 void softuart_update(void);
+void transmit_test(void);
 
 #endif
