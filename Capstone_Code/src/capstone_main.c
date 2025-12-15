@@ -39,7 +39,7 @@ int main(void) {
 
     //UART init
     softuart_init();
-
+    transmit_test();
     while (1) {
 
         read_buttons();

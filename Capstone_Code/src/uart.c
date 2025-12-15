@@ -145,6 +145,8 @@ uint8_t softuart_rx_read(void)
 void transmit_test(void) {
 	//Transmit test
 	strcpy(message, "B");
+	update_display();				
+
 	softuart_tx_bytes((uint8_t*)"A", 1);
 	while(1) {
 		if (softuart_rx_available())
@@ -152,7 +154,8 @@ void transmit_test(void) {
 				uint8_t c = softuart_rx_read();
 				message[0] = c;
 				message[1] = '\0';
-				update_display();				
+				update_display();
+				break;		
 			}
 	}
 }
