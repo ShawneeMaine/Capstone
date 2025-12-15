@@ -63,8 +63,8 @@ void interpret_buttons() {
         if(button_pressed == 1) { //button pressed, handle last unpress
 
                 //transmit test
-                transmit_test();
-                return;
+                //transmit_test();
+                //return;
 
 		LED_DDR |= (1<<LED_PIN);
 		LED_PORT |= (1<<LED_PIN);
@@ -80,16 +80,21 @@ void interpret_buttons() {
         else if(button_pressed == 0) { //button unpressed, handle last press
 
                 //transmit test
-                return;
+                //return;
 
 		LED_PORT &= ~(1<<LED_PIN);
-                if(abs(b2_press_time-DOT) < TOL)
+                if(abs(b2_press_time-DOT) < TOL) {
                         update_string(current_letter,MAX_LETTER_LENGTH,'.');
-                else if(abs(b2_press_time-DASH) < TOL)
+			display_letter();
+		}
+                else if(abs(b2_press_time-DASH) < TOL) {
                         update_string(current_letter,MAX_LETTER_LENGTH,'-');
+			display_letter();
+		}
 		else if(b2_press_time>SEND_SEPARATION) {
 			update_string(message,MAX_MESSAGE_LENGTH,decode());
 			//send_data();
+			oled_clear();
 			display_message();
 			memset(message,0,sizeof(message));
 			memset(current_letter,0,sizeof(current_letter));
