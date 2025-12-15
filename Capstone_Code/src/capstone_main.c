@@ -7,6 +7,7 @@ This is the main logic code for the capstone project that will run on an ATTINY8
 #include "capstone_morse.h"
 #include "capstone_display.h"
 #include "wrapper.h"
+#include "uart.h"
 
 #define STARTUP_DELAY 20000
 
@@ -28,6 +29,7 @@ int main(void) {
     oled_init(); //Send SSD1306 init sequence
     oled_clear();
     oled_set_cursor(0, 0);
+    uart_init();
 
     //I2C LED test
 //    led_i2c_test();
@@ -36,8 +38,14 @@ int main(void) {
     //test1();
 
     while (1) {
+	if (rx_done)
+	{
+		uint8_t c = rx_byte;
+		rx_done = 0;
+	}
         read_buttons();
         interpret_buttons();
+
     }
 }
 

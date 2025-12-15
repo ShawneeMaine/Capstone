@@ -6,7 +6,7 @@ It uses the ATTINY84's internal pull-up resistors, interrupts, and software debo
 Button 1 is connected to pin PA2 on the ATTINY. This is the SEND MESSAGE button for this project.
 Button 2 is connected to pin PA3 on the ATTINY. This is the MORSE CODE INPUT button for this project.
 */
-
+#include "uart.h"
 
 #include "capstone_input.h"
 #include <avr/io.h>
@@ -35,8 +35,27 @@ uint8_t button_pressed=0;
 
 
 //Timer0: 1ms interrupt
+//Also handling the RX (receiving) interrupts for receiving data from other device
 ISR(TIM0_COMPA_vect) {
     millis++;
+    if (rx_bit_index < 8)
+    {
+        if (RX_PINR & (1 << RX_PIN))
+            rx_byte |= (1 << rx_bit_index);
+
+        rx_bit_index++;
+
+        OCR0A = OCR0A_VAL;
+        TCNT0 = 0;
+    }
+    else
+    {
+        TCCR0B = 0;
+        rx_busy = 0;
+        rx_done = 1;
+
+        PCMSK1 |= (1 << PCINT9);
+    }
 }
 
 
