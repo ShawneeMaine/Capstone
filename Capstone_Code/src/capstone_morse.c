@@ -3,6 +3,8 @@
 //For testing purposes only the real header is replaced with the simulation header
 //#include "input_simulation.h"
 
+//for trasmit test
+#include "uart.h"
 
 #include "capstone_input.h"
 #include "capstone_display.h"
@@ -59,6 +61,11 @@ char current_letter[MAX_LETTER_LENGTH + 1];
 
 void interpret_buttons() {
         if(button_pressed == 1) { //button pressed, handle last unpress
+
+                //transmit test
+                //transmit_test();
+                //return;
+
 		LED_DDR |= (1<<LED_PIN);
 		LED_PORT |= (1<<LED_PIN);
                 if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter) == MAX_LETTER_LENGTH)) {
@@ -71,14 +78,23 @@ void interpret_buttons() {
                 }
         }
         else if(button_pressed == 0) { //button unpressed, handle last press
+
+                //transmit test
+                //return;
+
 		LED_PORT &= ~(1<<LED_PIN);
-                if(abs(b2_press_time-DOT) < TOL)
+                if(abs(b2_press_time-DOT) < TOL) {
                         update_string(current_letter,MAX_LETTER_LENGTH,'.');
-                else if(abs(b2_press_time-DASH) < TOL)
+			display_letter();
+		}
+                else if(abs(b2_press_time-DASH) < TOL) {
                         update_string(current_letter,MAX_LETTER_LENGTH,'-');
+			display_letter();
+		}
 		else if(b2_press_time>SEND_SEPARATION) {
 			update_string(message,MAX_MESSAGE_LENGTH,decode());
 			//send_data();
+			oled_clear();
 			display_message();
 			memset(message,0,sizeof(message));
 			memset(current_letter,0,sizeof(current_letter));

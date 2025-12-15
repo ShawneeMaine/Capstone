@@ -119,6 +119,46 @@ void display_message()
     }
 }
 
+void display_letter()
+{
+    uint8_t len = strlen(current_letter);
+    uint8_t cursor_col = 0;
+
+    //Start at top-left always.
+    oled_set_cursor(0, 0);
+
+    for (uint8_t j = 0; j < len; j++)
+    {
+        char cl = current_letter[j];
+
+        //Find matching font index
+        uint8_t idx = 0xFF;
+        for (uint8_t i = 0; i < 29; i++)
+        {
+            if (alphabet[i] == cl)
+            {
+                idx = i;
+                break;
+            }
+        }
+
+        //Skip unknown characters (redundant error checking)
+        if (idx == 0xFF)
+            continue;
+
+        //Load 6 bytes of font data
+        for (uint8_t k = 0; k < 6; k++)
+            buffer[k] = ssd1306xled_font6x8[idx * CHAR_SIZE + k];
+
+        //Write to screen
+        oled_write_char6(buffer);
+
+        //Move cursor to next char
+        cursor_col += CHAR_SIZE;
+        oled_set_cursor(0, cursor_col);
+    }
+}
+
 
 //Testing function
 void test1() {

@@ -4,6 +4,7 @@
 #include <stdint.h>
 void update_display();
 void display_message();
+void display_letter();
 void test1();
 void oled_send_command(uint8_t cmd);
 void oled_send_data(const uint8_t *data, uint8_t len);
