@@ -85,6 +85,9 @@ void interpret_buttons() {
         }
 	//reset button_pressed so it only iterates once
 	button_pressed = 2;
+
+        //Transmit interface to send a byte
+        //uart_tx_byte('A');
 }
 
 

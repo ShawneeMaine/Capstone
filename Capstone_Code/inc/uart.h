@@ -1,33 +1,30 @@
-#ifndef UART_H
-#define UART_H
+#ifndef SOFTUART_H
+#define SOFTUART_H
 
 #include <stdint.h>
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
+#include <stdbool.h>
 
-#define TX_PORT PORTB
-#define TX_DDR  DDRB
-#define TX_PIN  PB0
+#define SOFTUART_TX_PIN 0  // PB0
+#define SOFTUART_TX_PORT PORTB
+#define SOFTUART_TX_DDR  DDRB
 
-#define RX_PORT PORTB
-#define RX_DDR  DDRB
-#define RX_PINR PINB
-#define RX_PIN  PB1
+#define SOFTUART_RX_PIN PB1
+#define SOFTUART_RX_PIN_REG PINB   // PINB reads the logic state of PORTB
 
-#define FREQ 1000000UL
-#define BAUD 2400
+#define SOFTUART_RX_BUFFER 21
 
-#define TIM_BITS (1<<CS00)
-#define BIT_TIME (1000000UL/BAUD)
-#define OCR0A_VAL (BIT_TIME - 1)
+bool softuart_rx_available(void);
+uint8_t softuart_rx_read(void);
 
-extern volatile uint8_t rx_byte;
-extern volatile uint8_t rx_bit_index;
-extern volatile uint8_t rx_busy;
-extern volatile uint8_t rx_done;
+#define SOFTUART_BAUD 9600UL
+#define F_CPU 1000000UL
 
-void uart_init(void);
-void tx_uart(uint8_t data);
+void softuart_init(void);
+bool softuart_tx_busy(void);
+void softuart_tx_byte(uint8_t b);
+void softuart_tx_bytes(const uint8_t *data, uint8_t len);
+
+// Optional: call in main loop to process completed TX if needed
+void softuart_update(void);
 
 #endif

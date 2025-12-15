@@ -38,24 +38,6 @@ uint8_t button_pressed=0;
 //Also handling the RX (receiving) interrupts for receiving data from other device
 ISR(TIM0_COMPA_vect) {
     millis++;
-    if (rx_bit_index < 8)
-    {
-        if (RX_PINR & (1 << RX_PIN))
-            rx_byte |= (1 << rx_bit_index);
-
-        rx_bit_index++;
-
-        OCR0A = OCR0A_VAL;
-        TCNT0 = 0;
-    }
-    else
-    {
-        TCCR0B = 0;
-        rx_busy = 0;
-        rx_done = 1;
-
-        PCMSK1 |= (1 << PCINT9);
-    }
 }
 
 

@@ -29,7 +29,7 @@ int main(void) {
     oled_init(); //Send SSD1306 init sequence
     oled_clear();
     oled_set_cursor(0, 0);
-    uart_init();
+    softuart_init();
 
     //I2C LED test
 //    led_i2c_test();
@@ -37,12 +37,16 @@ int main(void) {
     //Display test
     //test1();
 
+    //UART init
+    softuart_init();
+
     while (1) {
-	if (rx_done)
-	{
-		uint8_t c = rx_byte;
-		rx_done = 0;
-	}
+    if (softuart_rx_available())
+        {
+            uint8_t c = softuart_rx_read();
+            // echo back received byte
+            softuart_tx_byte(c);
+        }
         read_buttons();
         interpret_buttons();
 

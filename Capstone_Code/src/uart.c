@@ -1,67 +1,140 @@
 #include "uart.h"
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
 
-volatile uint8_t rx_byte = 0;
-volatile uint8_t rx_bit_index = 0;
-volatile uint8_t rx_busy = 0;
-volatile uint8_t rs_done = 0;
+#define BIT_TIME (F_CPU / SOFTUART_BAUD)  // Timer1 ticks per bit
+#define RX_SAMPLE_OFFSET (BIT_TIME / 2)  // sample in middle of bit
 
-void uart_init(void)
+// --- TX state ---
+static volatile uint8_t tx_byte;
+static volatile uint8_t tx_mask;
+static volatile bool tx_active = false;
+
+// --- RX state ---
+static volatile uint8_t rx_byte;
+static volatile uint8_t rx_mask;
+static volatile uint8_t rx_bits_received;
+static volatile bool rx_active = false;
+static volatile bool rx_ready = false;
+
+// --- TX init ---
+static void tx_init(void)
 {
-	//idle high
-	TX_DDR |= (1<<TX_PIN);
-	TX_PORT |= (1<<TX_PIN);
+    SOFTUART_TX_DDR |= (1 << SOFTUART_TX_PIN);   // output
+    SOFTUART_TX_PORT |= (1 << SOFTUART_TX_PIN);  // idle high
 
-	//rx pullup
-	RX_DDR &= ~(1<<RX_PIN);
-	RX_PORT |= (1<<RX_PIN);
-
-	//enable interrupt
-	GIMSK |= (1<<PCIE1);
-	PCMSK1 |= (1<<PCINT9);
-
-	//timer setup
-	TCCR0A = (1<<WGM01);
-	TCCR0B = 0;
-	OCR0A = OCR0A_VAL;
-	TIMSK0 = (1<<OCIE0A);
-
-	sei();
+    // Timer1 CTC mode
+    TCCR1B = (1 << WGM12);
+    OCR1A = BIT_TIME;
+    TIMSK1 |= (1 << OCIE1A); // enable compare
 }
 
-void tx_uart(uint8_t data)
+// --- RX init ---
+static void rx_init(void)
 {
-	TX_PORT &= ~(1<<TX_PIN);
-	_delay_us(BIT_TIME);
+	DDRB &= ~(1 << PB1);      // input
+	PORTB |= (1 << PB1);      // enable pull-up
 
-	for (uint8_t i = 0; i < 8; i++)
-	{
-		if (data & 0x01)
-			TX_PORT |= (1<<TX_PIN);
-		else
-			TX_PORT |= ~(1<<TX_PIN);
-		_delay_us(BIT_TIME);
-		data >>= 1;
-	}
-	TX_PORT |= (1<<TX_PIN);
-	_delay_us(BIT_TIME);
+    // Pin change interrupt enable for PB1 (PCINT1)
+    GIMSK |= (1 << WGM12);      // enable PCINT0..7
+    PCMSK1 |= (1 << PCINT1);    // enable PCINT1
 }
-ISR(PCINT1_vect) //start rx
+
+// --- public init ---
+void softuart_init(void)
 {
-	if (!rx_busy && !(RX_PINR & (1 << RX_PIN)))
-	{
-        	rx_busy = 1;
-        	rx_done = 0;
-        	rx_bit_index = 0;
-        	rx_byte = 0;
+    tx_init();
+    rx_init();
+}
 
-        	PCMSK1 &= ~(1 << PCINT9);
+// --- TX ---
+bool softuart_tx_busy(void) { return tx_active; }
 
-        	TCNT0 = 0;
-        	OCR0A = (BIT_TIME + BIT_TIME / 2) - 1;
-        	TCCR0B = TIM_BITS;
-    	}
+void softuart_tx_byte(uint8_t b)
+{
+    while (tx_active); // wait if previous byte still sending
+
+    tx_byte = b;
+    tx_mask = 0x01;
+    tx_active = true;
+
+    // Send start bit immediately
+    SOFTUART_TX_PORT &= ~(1 << SOFTUART_TX_PIN);
+    TCNT1 = 0;
+    TCCR1B |= (1 << CS10);  // start Timer1
+}
+
+void softuart_tx_bytes(const uint8_t *data, uint8_t len)
+{
+    for (uint8_t i = 0; i < len; i++)
+    {
+        softuart_tx_byte(data[i]);
+        while (tx_active); // wait for byte finish
+    }
+}
+
+// --- RX buffer ---
+static volatile uint8_t rx_buffer[SOFTUART_RX_BUFFER];
+static volatile uint8_t rx_head = 0;
+static volatile uint8_t rx_tail = 0;
+
+// --- RX ISR modified ---
+ISR(TIM1_COMPA_vect)
+{
+    // TX handling (unchanged)
+    if (tx_active)
+    {
+        if (tx_mask)
+        {
+            if (tx_byte & tx_mask)
+                SOFTUART_TX_PORT |= (1 << SOFTUART_TX_PIN);
+            else
+                SOFTUART_TX_PORT &= ~(1 << SOFTUART_TX_PIN);
+            tx_mask <<= 1;
+        }
+        else
+        {
+            SOFTUART_TX_PORT |= (1 << SOFTUART_TX_PIN);
+            tx_active = false;
+            TCCR1B &= ~(1 << CS10);
+        }
+    }
+
+    // RX handling
+    if (rx_active)
+    {
+        if (rx_bits_received < 8)
+        {
+            rx_byte >>= 1;
+            if (SOFTUART_RX_PIN_REG & (1 << SOFTUART_RX_PIN))
+                rx_byte |= 0x80;
+            rx_bits_received++;
+        }
+        else
+        {
+            // store byte in buffer
+            uint8_t next = (rx_head + 1) % SOFTUART_RX_BUFFER;
+            if (next != rx_tail) // avoid overflow
+            {
+                rx_buffer[rx_head] = rx_byte;
+                rx_head = next;
+            }
+            // stop receiving
+            rx_active = false;
+        }
+    }
+}
+
+// --- RX read ---
+bool softuart_rx_available(void)
+{
+    return rx_head != rx_tail;
+}
+
+uint8_t softuart_rx_read(void)
+{
+    if (rx_head == rx_tail) return 0;
+    uint8_t val = rx_buffer[rx_tail];
+    rx_tail = (rx_tail + 1) % SOFTUART_RX_BUFFER;
+    return val;
 }
