@@ -37,8 +37,8 @@ static void rx_init(void)
 	PORTB |= (1 << PB1);      // enable pull-up
 
     // Pin change interrupt enable for PB1 (PCINT1)
-    GIMSK |= (1 << WGM12);      // enable PCINT0..7
-    PCMSK1 |= (1 << PCINT1);    // enable PCINT1
+    GIMSK |= (1 << PCIE1);      // enable PCINT 8...11
+    PCMSK1 |= (1 << PCINT9);    // enable PCINT9
 }
 
 // --- public init ---
@@ -146,7 +146,6 @@ void transmit_test(void) {
 	//Transmit test
 	strcpy(message, "B");
 	update_display();				
-
 	softuart_tx_bytes((uint8_t*)"A", 1);
 	while(1) {
 		if (softuart_rx_available())

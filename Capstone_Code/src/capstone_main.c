@@ -17,6 +17,8 @@ int main(void) {
     //This enables interrupts and starts the timers, so it must always fun first
     master_button_init();
 
+    //UART init
+    softuart_init();
 
     //programming delay
     uint32_t a = millis_now();
@@ -29,7 +31,6 @@ int main(void) {
     oled_init(); //Send SSD1306 init sequence
     oled_clear();
     oled_set_cursor(0, 0);
-    softuart_init();
 
     //I2C LED test
 //    led_i2c_test();
