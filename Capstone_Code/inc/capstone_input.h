@@ -8,6 +8,9 @@
 //#include <avr/interrupt.h>
 
 #define BUTTON2_PIN PA3
+#define LED_DDR DDRA
+#define LED_PIN PA5
+#define LED_PORT PORTA
 
 //The debounce time in milliseconds
 #define DEBOUNCE_MS 500

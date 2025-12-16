@@ -17,9 +17,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define LED_PIN PA5
-#define LED_DDR DDRA
-#define LED_PORT PORTA
 
 //morse table for decoding
 const char* morse_table[] =
@@ -60,14 +57,8 @@ char message[MAX_MESSAGE_LENGTH + 1];
 char current_letter[MAX_LETTER_LENGTH + 1];
 
 void interpret_buttons() {
-        if(button_pressed == 1) { //button pressed, handle last unpress
+        if(button_pressed == 2) { //button pressed, handle last unpress
 
-                //transmit test
-                //transmit_test();
-                //return;
-
-		LED_DDR |= (1<<LED_PIN);
-		LED_PORT |= (1<<LED_PIN);
                 if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter) == MAX_LETTER_LENGTH)) {
                         update_string(message,MAX_MESSAGE_LENGTH,decode());
                         if(b2_press_time>WORD_SEPERATION) {
@@ -79,10 +70,6 @@ void interpret_buttons() {
         }
         else if(button_pressed == 0) { //button unpressed, handle last press
 
-                //transmit test
-                //return;
-
-		LED_PORT &= ~(1<<LED_PIN);
                 if(abs(b2_press_time-DOT) < TOL) {
                         update_string(current_letter,MAX_LETTER_LENGTH,'.');
 			display_letter();
@@ -92,17 +79,15 @@ void interpret_buttons() {
 			display_letter();
 		}
 		else if(b2_press_time>SEND_SEPARATION) {
-			update_string(message,MAX_MESSAGE_LENGTH,decode());
-			//send_data();
-			oled_clear();
-			display_message();
+                        softuart_tx_bytes((uint8_t*)message, strlen(message));
 			memset(message,0,sizeof(message));
 			memset(current_letter,0,sizeof(current_letter));
+//			update_string(message,MAX_MESSAGE_LENGTH,decode());
+			//send_data();
+//			oled_clear();
+//			display_message();
 		}
         }
-	//reset button_pressed so it only iterates once
-	button_pressed = 2;
-
         //Transmit interface to send a byte
         //uart_tx_byte('A');
 }

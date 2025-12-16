@@ -4,7 +4,6 @@ Created 28 November 2025
 This is the main logic code for the capstone project that will run on an ATTINY84 and meant to be a simple communication device.
 */
 #include "capstone_input.h"
-#include "capstone_morse.h"
 #include "capstone_display.h"
 #include "wrapper.h"
 #include "uart.h"
@@ -12,6 +11,8 @@ This is the main logic code for the capstone project that will run on an ATTINY8
 #include <avr/wdt.h>
 
 #define STARTUP_DELAY 20000
+#define LED_PORT PORTA
+#define LED_PIN PA5
 
 
 int main(void) {
@@ -41,12 +42,9 @@ int main(void) {
 
     //UART init
     softuart_init();
-    transmit_test();
+    //transmit_test();
     while (1) {
-
         read_buttons();
-        interpret_buttons();
-
     }
 }
 

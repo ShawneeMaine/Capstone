@@ -6,9 +6,11 @@ It uses the ATTINY84's internal pull-up resistors, interrupts, and software debo
 Button 1 is connected to pin PA2 on the ATTINY. This is the SEND MESSAGE button for this project.
 Button 2 is connected to pin PA3 on the ATTINY. This is the MORSE CODE INPUT button for this project.
 */
-#include "uart.h"
 
 #include "capstone_input.h"
+
+#include "capstone_morse.h"
+#include "uart.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -101,6 +103,10 @@ void master_button_init() {
     io_init();
     timer0_init();
     sei();
+
+    //test LED init(PA5)
+	LED_DDR |= (1<<LED_PIN);
+
 }
 
 
@@ -110,22 +116,26 @@ void read_buttons() {
     uint32_t b2_current_timestamp = get_b2_timestamp();
 
    if(deb_flag) {//Button press detected
-            if ((now - b2_current_timestamp) >= DEBOUNCE_MS) {
-		if (raw_b2 != deb_b2) {
-		    deb_b2 = raw_b2;
-		    if (deb_b2 == 0) {
-			b2_prev_timestamp = b2_current_timestamp;
-			button_pressed = 1;
-		    }
-		    else {
-			b2_press_time = b2_current_timestamp - b2_prev_timestamp;
-			b2_prev_timestamp = b2_current_timestamp;
-			button_pressed = 0;
-		    }
-		    deb_flag = 0;
-		}
+        if ((now - b2_current_timestamp) >= DEBOUNCE_MS) {
+            if (raw_b2 != deb_b2) {
+                deb_b2 = raw_b2;
+                if (deb_b2 == 0) {
+                b2_prev_timestamp = b2_current_timestamp;
+                button_pressed = 2;
+            	LED_PORT |= (1<<LED_PIN);
+
+                }
+                else {
+                b2_press_time = b2_current_timestamp - b2_prev_timestamp;
+                b2_prev_timestamp = b2_current_timestamp;
+                button_pressed = 0;
+        		LED_PORT &= ~(1<<LED_PIN);
+                }
+                deb_flag = 0;
+                interpret_buttons();
             }
-     }
+        }
+    }
 
 
 }
