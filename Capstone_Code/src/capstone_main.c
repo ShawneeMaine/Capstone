@@ -46,6 +46,7 @@ int main(void) {
     //transmit_test();
     uint8_t msg_index;
 
+    
     while (1) {
         if(softuart_rx_available()) {
             msg_index = 0;
