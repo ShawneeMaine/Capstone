@@ -123,9 +123,10 @@ void display_letter()
 {
     uint8_t len = strlen(current_letter);
     uint8_t cursor_col = 0;
+    uint16_t page = 1;
 
-    //Start at top-left always.
-    oled_set_cursor(0, 0);
+    //Start in second row.
+    oled_set_cursor(page, 0);
 
     for (uint8_t j = 0; j < len; j++)
     {
@@ -133,7 +134,7 @@ void display_letter()
 
         //Find matching font index
         uint8_t idx = 0xFF;
-        for (uint8_t i = 0; i < 29; i++)
+        for (uint8_t i = 27; i < 29; i++)
         {
             if (alphabet[i] == cl)
             {
@@ -155,7 +156,7 @@ void display_letter()
 
         //Move cursor to next char
         cursor_col += CHAR_SIZE;
-        oled_set_cursor(0, cursor_col);
+        oled_set_cursor(page, cursor_col);
     }
 }
 

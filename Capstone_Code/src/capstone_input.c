@@ -120,16 +120,17 @@ void read_buttons() {
             if (raw_b2 != deb_b2) {
                 deb_b2 = raw_b2;
                 if (deb_b2 == 0) {
+                b2_press_time = b2_current_timestamp - b2_prev_timestamp;
                 b2_prev_timestamp = b2_current_timestamp;
                 button_pressed = 2;
-            	LED_PORT |= (1<<LED_PIN);
+//            	LED_PORT |= (1<<LED_PIN);
 
                 }
                 else {
                 b2_press_time = b2_current_timestamp - b2_prev_timestamp;
                 b2_prev_timestamp = b2_current_timestamp;
                 button_pressed = 0;
-        		LED_PORT &= ~(1<<LED_PIN);
+//        		LED_PORT &= ~(1<<LED_PIN);
                 }
                 deb_flag = 0;
                 interpret_buttons();

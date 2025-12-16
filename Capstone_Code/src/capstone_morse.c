@@ -58,14 +58,14 @@ char current_letter[MAX_LETTER_LENGTH + 1];
 
 void interpret_buttons() {
         if(button_pressed == 2) { //button pressed, handle last unpress
-
                 if((b2_press_time>LETTER_SEPERATION) || (strlen(current_letter) == MAX_LETTER_LENGTH)) {
                         update_string(message,MAX_MESSAGE_LENGTH,decode());
-                        if(b2_press_time>WORD_SEPERATION) {
+                        if((b2_press_time > WORD_SEPERATION) && (strlen(message)>1)) {
                                 strcpy(current_letter, " ");
                                 update_string(message,MAX_MESSAGE_LENGTH,decode());
                         }
                         memset(current_letter,0,sizeof(current_letter));
+                        update_display();
                 }
         }
         else if(button_pressed == 0) { //button unpressed, handle last press
