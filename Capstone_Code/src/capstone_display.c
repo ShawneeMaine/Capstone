@@ -23,6 +23,8 @@ The file was technically created earlier, but contained nothing but a single pri
 #define BLINK_DELAY 500
 
 uint8_t buffer[6];
+char msg[MAX_MESSAGE_LENGTH + 1];
+
 
 const uint8_t ssd1306xled_font6x8 []={
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // space
@@ -69,13 +71,14 @@ void update_display()
 	printf("\n");
 */
 
-	if(strlen(message) > 20) {
+	if((strlen(message) > 20) || (strlen(msg) > 20) || (strlen(current_letter) > 4)) {
 		strcpy(message, "MSG SIZE ERROR");
 		display_message();
 		return;
 	}
 	display_message();
-
+    display_letter();
+    rec_msg();
 }
 
 
@@ -310,5 +313,45 @@ void led_test(void) {
 		//LED off
 		LED_PORT &= ~(1 << LED_PIN);
 
+    }
+}
+
+//Receive test ping
+void rec_msg(void) {
+
+    uint8_t len = strlen(msg);
+    uint8_t cursor_col = 0;
+    uint8_t page = 2;
+    oled_set_cursor(page, 0);
+
+    for (uint8_t j = 0; j < len; j++)
+    {
+        char current_letter = msg[j];
+
+        //Find matching font index
+        uint8_t idx = 0xFF;
+        for (uint8_t i = 0; i < 29; i++)
+        {
+            if (alphabet[i] == current_letter)
+            {
+                idx = i;
+                break;
+            }
+        }
+
+        //Skip unknown characters (redundant error checking)
+        if (idx == 0xFF)
+            continue;
+
+        //Load 6 bytes of font data
+        for (uint8_t k = 0; k < 6; k++)
+            buffer[k] = ssd1306xled_font6x8[idx * CHAR_SIZE + k];
+
+        //Write to screen
+        oled_write_char6(buffer);
+
+        //Move cursor to next char
+        cursor_col += CHAR_SIZE;
+        oled_set_cursor(page, cursor_col);
     }
 }

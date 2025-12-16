@@ -7,6 +7,7 @@ This is the main logic code for the capstone project that will run on an ATTINY8
 #include "capstone_display.h"
 #include "wrapper.h"
 #include "uart.h"
+#include <string.h>
 
 #include <avr/wdt.h>
 
@@ -43,7 +44,23 @@ int main(void) {
     //UART init
     softuart_init();
     //transmit_test();
+    uint8_t msg_index;
+
     while (1) {
+        if(softuart_rx_available()) {
+            msg_index = 0;
+            memset(msg, 0, sizeof(msg));
+            while (softuart_rx_available()) {
+                uint8_t c = softuart_rx_read();
+                // Append to message if there is space
+                if (msg_index < sizeof(msg) - 1) {
+                    msg[msg_index++] = c;
+                    msg[msg_index] = '\0'; // keep null-terminated
+                }
+            }
+        update_display();
+        }
+        // Update display with whatever has been received so far
         read_buttons();
     }
 }

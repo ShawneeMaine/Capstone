@@ -14,5 +14,9 @@ void oled_clear(void);
 void oled_init(void);
 void led_i2c_test(void);
 void led_test(void);
+void rec_msg(void);
+
+extern char msg[21];//the receiving buffer
+
 
 #endif

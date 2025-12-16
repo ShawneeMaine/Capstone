@@ -72,11 +72,11 @@ void interpret_buttons() {
 
                 if(abs(b2_press_time-DOT) < TOL) {
                         update_string(current_letter,MAX_LETTER_LENGTH,'.');
-			display_letter();
+			update_display();
 		}
                 else if(abs(b2_press_time-DASH) < TOL) {
                         update_string(current_letter,MAX_LETTER_LENGTH,'-');
-			display_letter();
+			update_display();
 		}
 		else if(b2_press_time>SEND_SEPARATION) {
                         softuart_tx_bytes((uint8_t*)message, strlen(message));
