@@ -12,11 +12,12 @@ static volatile uint8_t tx_mask;
 static volatile bool tx_active = false;
 
 // --- RX state ---
-static volatile uint8_t rx_byte;
+static volatile uint8_t rx_byte = 0;
 static volatile uint8_t rx_mask;
 static volatile uint8_t rx_bits_received;
 static volatile bool rx_active = false;
 static volatile bool rx_ready = false;
+
 
 // --- TX init ---
 static void tx_init(void)
@@ -126,6 +127,22 @@ ISR(TIM1_COMPA_vect)
     }
 }
 
+ISR(PCINT1_vect)
+{
+	if(!(PINB&(1<<SOFTUART_RX_PIN)))
+	{
+		if(!rx_active)
+		{
+			rx_active = true;
+			rx_bits_received = 0;
+			rx_byte = 0;
+
+			TCNT1 = BIT_TIME / 2;
+			TCCR1B |= (1<<CS10);
+		}
+	}
+}
+
 // --- RX read ---
 bool softuart_rx_available(void)
 {
@@ -145,7 +162,7 @@ uint8_t softuart_rx_read(void)
 void transmit_test(void) {
 	//Transmit test
 	strcpy(message, "B");
-	update_display();				
+	update_display();
 	softuart_tx_bytes((uint8_t*)"A", 1);
 	while(1) {
 		if (softuart_rx_available())
@@ -154,7 +171,7 @@ void transmit_test(void) {
 				message[0] = c;
 				message[1] = '\0';
 				update_display();
-				break;		
+				break;
 			}
 	}
 }

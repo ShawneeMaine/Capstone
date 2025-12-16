@@ -9,11 +9,15 @@ This is the main logic code for the capstone project that will run on an ATTINY8
 #include "wrapper.h"
 #include "uart.h"
 
+#include <avr/wdt.h>
+
 #define STARTUP_DELAY 20000
 
 
 int main(void) {
 
+    MCUSR = 0;
+    wdt_disable();
     //This enables interrupts and starts the timers, so it must always fun first
     master_button_init();
 

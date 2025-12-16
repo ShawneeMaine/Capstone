@@ -115,6 +115,7 @@ void update_string(char* str, uint8_t max_len, char letter)
         if(len == max_len)
                 return;
 	*(str+len) = letter;
+	*(str+len+1) = '\0';
 }
 
 
