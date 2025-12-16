@@ -21,9 +21,6 @@ int main(void) {
     //This enables interrupts and starts the timers, so it must always fun first
     master_button_init();
 
-    //UART init
-    softuart_init();
-
     //programming delay
     uint32_t a = millis_now();
     uint32_t b = a;

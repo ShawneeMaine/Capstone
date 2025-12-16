@@ -75,15 +75,15 @@ void softuart_tx_bytes(const uint8_t *data, uint8_t len)
     }
 }
 
-// --- RX buffer ---
+//RX buffer
 static volatile uint8_t rx_buffer[SOFTUART_RX_BUFFER];
 static volatile uint8_t rx_head = 0;
 static volatile uint8_t rx_tail = 0;
 
-// --- RX ISR modified ---
+//RX ISR modified
 ISR(TIM1_COMPA_vect)
 {
-    // TX handling (unchanged)
+    //TX handling
     if (tx_active)
     {
         if (tx_mask)
@@ -102,7 +102,7 @@ ISR(TIM1_COMPA_vect)
         }
     }
 
-    // RX handling
+    //RX handling
     if (rx_active)
     {
         if (rx_bits_received < 8)
@@ -143,7 +143,7 @@ ISR(PCINT1_vect)
 	}
 }
 
-// --- RX read ---
+//RX read
 bool softuart_rx_available(void)
 {
     return rx_head != rx_tail;
@@ -163,15 +163,22 @@ void transmit_test(void) {
 	//Transmit test
 	strcpy(message, "B");
 	update_display();
-	softuart_tx_bytes((uint8_t*)"A", 1);
-	while(1) {
-		if (softuart_rx_available())
-			{
-				uint8_t c = softuart_rx_read();
-				message[0] = c;
-				message[1] = '\0';
-				update_display();
-				break;
-			}
-	}
+	softuart_tx_bytes((uint8_t*)"CCC", 3);
+    // Clear message first
+    memset(message, 0, sizeof(message));
+    uint8_t msg_index = 0;
+
+    while (1) {
+        // While there is data in the RX buffer
+        while (softuart_rx_available()) {
+            uint8_t c = softuart_rx_read();
+            // Append to message if there is space
+            if (msg_index < sizeof(message) - 1) {
+                message[msg_index++] = c;
+                message[msg_index] = '\0'; // keep null-terminated
+            }
+        }
+        // Update display with whatever has been received so far
+        update_display();
+    }
 }
