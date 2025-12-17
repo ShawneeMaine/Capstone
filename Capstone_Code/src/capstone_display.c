@@ -76,6 +76,7 @@ void update_display()
 		display_message();
 		return;
 	}
+    oled_clear();
 	display_message();
     display_letter();
     rec_msg();
